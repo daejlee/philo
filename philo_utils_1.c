@@ -1,3 +1,6 @@
+#include "philosophers.h"
+#include <stdlib.h>
+#include <pthread.h>
 
 static const char	*blank_check(const char *nptr)
 {
@@ -43,4 +46,41 @@ int	ft_atoi(const char *nptr)
 	}
 	res = outlier_check(res, sign);
 	return (res);
+}
+
+static int	get_slots(t_philo *p)
+{
+	p->pthread = (pthread_t *)malloc(sizeof (pthread_t) * p->philo_num);
+	p->mutex = (pthread_mutex_t *)malloc(sizeof (pthread_mutex_t) * p->philo_num);
+	if (!p->pthread || !p->pthr_id || !p->mutex || !p->mtx_id)
+	{
+		if (p->pthread)
+			free (p->pthread);
+		if (p->mutex)
+			free (p->mutex);
+		return (1);
+	}
+	return (0);
+}
+
+int	prep_args(t_philo *p, char **argv)
+{
+	p->philo_num = ft_atoi(argv[1]);
+	p->die_time = ft_atoi(argv[2]);
+	p->eat_time = ft_atoi(argv[3]);
+	p->sleep_time = ft_atoi(argv[4]);
+	if (argv[5])
+		p->must_eat_times = ft_atoi(argv[5]);
+	else
+		p->must_eat_times = 0;
+	if (p->philo_num < 1 || p->die_time < 1
+		|| p->eat_time < 1 || p->sleep_time < 1
+		|| p->must_eat_times < 0)
+		{
+			write(1, "invalid arg\n", 14);
+			return (1);
+		}
+	if (get_slots(p))
+		return (1);
+	return (0);
 }
