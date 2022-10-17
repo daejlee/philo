@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= main.c
+SRC 		= main.c philo_utils_1.c
 OBJ 		= $(SRC:.c=.o)
 LIBFT 		= ./libft_garage/libft.a
 LIBFT_DIR	= ./libft_garage
@@ -30,7 +30,7 @@ endif
 all : $(NAME)
 
 $(NAME) : $(OBJ_FILES) $(LIBFT)
-	$(CC) -g $(CFLAGS) -o $(NAME) $(SRC) $(LIBFT_DIR)/libft/*.c $(LIBFT_DIR)/ft_printf/*.c $(LIBFT_DIR)/gnl/*.c
+	$(CC) -g $(CFLAGS) -o $(NAME) $(SRC)
 #	$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -lft -L$(LIBFT_DIR)
 
 $(OBJ_FILES) : $(SRC_FILES)
