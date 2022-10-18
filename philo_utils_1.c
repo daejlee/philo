@@ -1,6 +1,6 @@
 #include "philosophers.h"
 #include <stdlib.h>
-#include <pthread.h>
+#include <unistd.h>
 
 static const char	*blank_check(const char *nptr)
 {
@@ -48,22 +48,33 @@ int	ft_atoi(const char *nptr)
 	return (res);
 }
 
-static int	get_slots(t_philo *p)
+static int	get_slots(t_philo_main *p)
 {
+	int				i;
+	t_philo_time	*temp;
+
 	p->pthread = (pthread_t *)malloc(sizeof (pthread_t) * p->philo_num);
-	p->mutex = (pthread_mutex_t *)malloc(sizeof (pthread_mutex_t) * p->philo_num);
-	if (!p->pthread || !p->pthr_id || !p->mutex || !p->mtx_id)
+	p->recent_logs = (t_philo_time *)malloc(sizeof (t_philo_time) * p->philo_num);
+	if (!p->pthread || !p->recent_logs)
 	{
 		if (p->pthread)
 			free (p->pthread);
-		if (p->mutex)
-			free (p->mutex);
+		if (p->recent_logs)
+			free (p->recent_logs);
 		return (1);
+	}
+	i = 0;
+	while (i < p->philo_num)
+	{
+		temp = &(p->recent_logs[i++]);
+		temp->eat = 0;
+		temp->sleep = 0;
+		temp->think = 0;
 	}
 	return (0);
 }
 
-int	prep_args(t_philo *p, char **argv)
+int	prep_args(t_philo_main *p, char **argv)
 {
 	p->philo_num = ft_atoi(argv[1]);
 	p->die_time = ft_atoi(argv[2]);
@@ -77,7 +88,7 @@ int	prep_args(t_philo *p, char **argv)
 		|| p->eat_time < 1 || p->sleep_time < 1
 		|| p->must_eat_times < 0)
 		{
-			write(1, "invalid arg\n", 14);
+			write(1, "invalid arg\n", 13);
 			return (1);
 		}
 	if (get_slots(p))

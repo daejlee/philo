@@ -30,7 +30,7 @@ endif
 all : $(NAME)
 
 $(NAME) : $(OBJ_FILES) $(LIBFT)
-	$(CC) -g $(CFLAGS) -o $(NAME) $(SRC)
+	$(CC) -g -pthread $(CFLAGS) -o $(NAME) $(SRC)
 #	$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -lft -L$(LIBFT_DIR)
 
 $(OBJ_FILES) : $(SRC_FILES)
@@ -41,11 +41,11 @@ $(LIBFT) :
 
 clean :
 	rm -f $(OBJ_FILES) $(BONUS_OBJ)
-	make -C libft_garage/ clean
+#	make -C libft_garage/ clean
 
 fclean :
 	rm -f $(OBJ_FILES) $(BONUS_OBJ) $(NAME)
-	make -C libft_garage/ fclean
+#	make -C libft_garage/ fclean
 
 re :
 	$(MAKE) fclean
