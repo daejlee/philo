@@ -19,12 +19,8 @@ int	main(int argc, char **argv)
 	while (no_dead_philosopers()
 			|| number_of_times_each_philosopher_must_eat == 식사 횟수)
 	{
-		// 임계 구역
-		LOCK mutex_id[NOT LOCKED]; //1번 철학자 식사 시작
-		print_log(); //timestamp_in_ms X is eating
-		wait(eating time);
-		UNLOCK mutex_id[철학자 번호, 철학자 번호 + 1];
-		// 임계 구역 끝
+		if (연속한 두 개의 포크 사용가능)
+			eat();
 		print_log(); //timestamp_in_ms X is sleepling
 	}
 	purge_everything();

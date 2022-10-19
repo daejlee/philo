@@ -16,6 +16,8 @@ typedef struct s_philo_main_info
 	int				eat_time;
 	int				sleep_time;
 	int				must_eat_times;
+	int				eaten_time;
+	int				*fork;
 	pthread_t		*pthread;
 	pthread_mutex_t	mutex;
 	t_philo_time	*recent_logs;

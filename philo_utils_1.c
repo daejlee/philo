@@ -55,17 +55,21 @@ static int	get_slots(t_philo_main *p)
 
 	p->pthread = (pthread_t *)malloc(sizeof (pthread_t) * p->philo_num);
 	p->recent_logs = (t_philo_time *)malloc(sizeof (t_philo_time) * p->philo_num);
-	if (!p->pthread || !p->recent_logs)
+	p->fork = (int *)malloc(sizeof (int) * p->philo_num);
+	if (!p->pthread || !p->recent_logs || !p->fork)
 	{
 		if (p->pthread)
 			free (p->pthread);
 		if (p->recent_logs)
 			free (p->recent_logs);
+		if (p->fork)
+			free (p->fork);
 		return (1);
 	}
 	i = 0;
 	while (i < p->philo_num)
 	{
+		p->fork[i] = 1;
 		temp = &(p->recent_logs[i++]);
 		temp->eat = 0;
 		temp->sleep = 0;
@@ -84,6 +88,7 @@ int	prep_args(t_philo_main *p, char **argv)
 		p->must_eat_times = ft_atoi(argv[5]);
 	else
 		p->must_eat_times = 0;
+	p->eaten_time = 0;
 	if (p->philo_num < 1 || p->die_time < 1
 		|| p->eat_time < 1 || p->sleep_time < 1
 		|| p->must_eat_times < 0)
