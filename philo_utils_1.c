@@ -78,7 +78,7 @@ static int	get_slots(t_philo_main *p)
 	return (0);
 }
 
-int	prep_args(t_philo_main *p, char **argv)
+int	prep_args(t_philo_args *p, char **argv)
 {
 	p->philo_num = ft_atoi(argv[1]);
 	p->die_time = ft_atoi(argv[2]);
@@ -92,11 +92,6 @@ int	prep_args(t_philo_main *p, char **argv)
 	if (p->philo_num < 1 || p->die_time < 1
 		|| p->eat_time < 1 || p->sleep_time < 1
 		|| p->must_eat_times < 0)
-		{
-			write(1, "invalid arg\n", 13);
 			return (1);
-		}
-	if (get_slots(p))
-		return (1);
 	return (0);
 }

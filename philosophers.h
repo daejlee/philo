@@ -2,28 +2,27 @@
 # define PHILOSOPHERS_H
 #include <pthread.h>
 
-typedef struct s_philo_time_info
+typedef struct s_philo_info
 {
+	int	idx;
 	int	eat;
 	int	sleep;
 	int	think;
-}	t_philo_time;
+	int	*l_fork;
+	int	*r_fork;
+	pthread_mutex_t	*mtx;
+}	t_philo_info;
 
-typedef struct s_philo_main_info
+typedef struct s_philo_args
 {
 	int				philo_num;
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
 	int				must_eat_times;
-	int				eaten_time;
-	int				*fork;
-	pthread_t		*pthread;
-	pthread_mutex_t	mutex;
-	t_philo_time	*recent_logs;
-}	t_philo_main;
+}	t_philo_args;
 
 int	ft_atoi(const char *nptr);
-int	prep_args(t_philo_main *p, char **argv);
+int	prep_args(t_philo_args *p, char **argv);
 
 #endif
