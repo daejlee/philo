@@ -17,7 +17,7 @@ static int	outlier_check(unsigned int res, int sign)
 	if (res > 2147483648 && sign == -1)
 		return (0);
 	else if (res > 2147483647 && sign == 1)
-		return (-1);
+		return (-2);
 	else
 		return (res * sign);
 }
@@ -87,10 +87,10 @@ int	prep_args(t_philo_args *p, char **argv)
 	if (argv[5])
 		p->must_eat_times = ft_atoi(argv[5]);
 	else
-		p->must_eat_times = 0;
+		p->must_eat_times = -1;
 	if (p->philo_num < 1 || p->die_time < 1
 		|| p->eat_time < 1 || p->sleep_time < 1
-		|| p->must_eat_times < 0)
+		|| p->must_eat_times < -1)
 			return (1);
 	return (0);
 }
