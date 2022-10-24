@@ -10,7 +10,7 @@ void	*routine(void *i)
 
 int	main(int argc, char **argv)
 {
-	t_philo_main p;
+	t_philo_args args;
 	pthread_mutex_t	mutex;
 
 	if (INVALID_ARG)
