@@ -38,56 +38,6 @@ void	init_profile(t_philo_manager *manager, t_philo_args args)
 	}
 }
 
-int	grab_n_eat(t_philo_profile *p, struct timeval *time)
-{
-	int	*i_1;
-	int	*i_2;
-	
-	i_1 = p->l_fork;
-	i_2 = p->r_fork;
-	*i_1 = 0;
-	*i_2 = 0;
-	gettimeofday(time, NULL);
-	p->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
-	p->r_sleep = 0;
-	p->r_think = 0;
-	*(p->eat_max) -= 1;
-	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
-	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
-	printf("%lu %i is eating\n", p->r_eat, p->idx);
-	pthread_mutex_unlock(p->mtx);
-
-	usleep(p->eat_time * 1000); //다른 스레드가 작동해야함
-
-	pthread_mutex_lock(p->mtx);
-	if (*(p->t_flag_adr))
-	{
-		pthread_mutex_unlock(p->mtx);
-		return (0);
-	}
-	*i_1 = 1;
-	*i_2 = 1;
-	gettimeofday(time, NULL);
-	p->r_sleep = time->tv_sec / 100000 + time->tv_usec / 1000;
-	printf("%lu %i is sleeping\n", p->r_sleep, p->idx);
-	pthread_mutex_unlock(p->mtx);
-
-	usleep(p->sleep_time * 1000); //다른 스레드가 작동해야함
-	
-	pthread_mutex_lock(p->mtx);
-	if (*(p->t_flag_adr))
-	{
-		pthread_mutex_unlock(p->mtx);
-		return (0);
-	}
-	p->r_sleep = 0;
-	gettimeofday(time, NULL);
-	p->r_think = time->tv_sec / 100000 + time->tv_usec / 1000;
-	printf("%lu %i is thinking\n", p->r_think, p->idx);
-	pthread_mutex_unlock(p->mtx);
-	return (0);
-}
-
 int	is_termination(t_philo_profile *p_info, struct timeval *time)
 {
 	__uint64_t	temp;
@@ -109,6 +59,48 @@ int	is_termination(t_philo_profile *p_info, struct timeval *time)
 		return (0);
 	}
 	return (1);
+}
+
+int	grab_n_eat(t_philo_profile *p, struct timeval *time)
+{
+	int	*i_1;
+	int	*i_2;
+	
+	i_1 = p->l_fork;
+	i_2 = p->r_fork;
+	*i_1 = 0;
+	*i_2 = 0;
+	gettimeofday(time, NULL);
+	p->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
+	p->r_sleep = 0;
+	p->r_think = 0;
+	*(p->eat_max) -= 1;
+	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
+	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
+	printf("%lu %i is eating\n", p->r_eat, p->idx);
+	pthread_mutex_unlock(p->mtx);
+
+	usleep(p->eat_time * 1000); //다른 스레드가 작동해야함
+
+	if (!is_termination(p, time))
+		return (0);
+	*i_1 = 1;
+	*i_2 = 1;
+	gettimeofday(time, NULL);
+	p->r_sleep = time->tv_sec / 100000 + time->tv_usec / 1000;
+	printf("%lu %i is sleeping\n", p->r_sleep, p->idx);
+	pthread_mutex_unlock(p->mtx);
+
+	usleep(p->sleep_time * 1000); //다른 스레드가 작동해야함
+
+	if (!is_termination(p, time))
+		return (0);
+	p->r_sleep = 0;
+	gettimeofday(time, NULL);
+	p->r_think = time->tv_sec / 100000 + time->tv_usec / 1000;
+	printf("%lu %i is thinking\n", p->r_think, p->idx);
+	pthread_mutex_unlock(p->mtx);
+	return (0);
 }
 
 void	*routine(void *philo_info)
