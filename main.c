@@ -139,7 +139,10 @@ void	*routine(void *philo_info)
 		if (!(p_info->r_fork))
 		{
 			usleep(p_info->die_time * 1000);
+			gettimeofday(&time, NULL);
+			printf("%lu 1 died\n", time.tv_sec / 100000 + time.tv_usec / 1000);
 			pthread_mutex_unlock(p_info->mtx);
+			break ;
 		}
 		else if (*(p_info->l_fork) && *(p_info->r_fork))
 			grab_n_eat(p_info, &time);
