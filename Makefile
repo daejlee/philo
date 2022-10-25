@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= main.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
+SRC 		= philo.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
 OBJ 		= $(SRC:.c=.o)
 
 ifdef WITH_BONUS
@@ -26,7 +26,7 @@ endif
 all : $(NAME)
 
 $(NAME) : $(OBJ_FILES)
-	$(CC) -g -pthread $(CFLAGS) -o $(NAME) $(SRC)
+	$(CC) -pthread $(CFLAGS) -o $(NAME) $(SRC)
 
 $(OBJ_FILES) : $(SRC_FILES)
 	$(CC) $(CFLAGS) -c $(SRC_FILES)
