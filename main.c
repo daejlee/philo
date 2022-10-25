@@ -18,7 +18,7 @@ void	init_profile(t_philo_manager *manager, t_philo_args args)
 	i = 0;
 	while (i < args.philo_num)
 	{
-		manager->profile[i].idx = i;
+		manager->profile[i].idx = i + 1;
 		manager->profile[i].r_eat = 0;
 		manager->profile[i].r_sleep = 0;
 		manager->profile[i].r_think = 0;
@@ -50,7 +50,7 @@ int	is_termination(t_philo_profile *p_info, struct timeval *time)
 	}
 	gettimeofday(time, NULL);
 	temp = time->tv_sec / 100000 + time->tv_usec / 1000;
-	if (p_info->r_eat >= p_info->die_time + temp
+	if (temp >= p_info->die_time + p_info->r_eat
 		|| !p_info->eat_max)
 	{
 		*(p_info->t_flag_adr) = 1;
@@ -60,6 +60,14 @@ int	is_termination(t_philo_profile *p_info, struct timeval *time)
 	}
 	return (1);
 }
+
+/*
+usleep(eat, think) 도중 철학자가 사망할 때의 체크가 필요하다.
+예를 들어, ./philo 2 400 300 300 의 경우 philo_0가 think 
+도중 사망하는데, 사망 로그 출력이 무조건 실제 사망시각보다
+10ms 이상 늦어지게 된다.
+-> 사망을 예측할 수 있다. 분기문으로 해결 가능함 -> 해결
+*/
 
 int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 {
@@ -80,7 +88,12 @@ int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 	printf("%lu %i is eating\n", p->r_eat, p->idx);
 	pthread_mutex_unlock(p->mtx);
 
-	usleep(p->eat_time * 1000); //다른 스레드가 작동해야함
+	if (p->eat_time >= p->die_time)
+	{
+		usleep(p->die_time * 1000);
+		return (0);
+	}
+	usleep(p->eat_time * 1000);
 
 	if (!is_termination(p, time))
 		return (0);
@@ -91,7 +104,12 @@ int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 	printf("%lu %i is sleeping\n", p->r_sleep, p->idx);
 	pthread_mutex_unlock(p->mtx);
 
-	usleep(p->sleep_time * 1000); //다른 스레드가 작동해야함
+	if (p->eat_time + p->sleep_time >= p->die_time)
+	{
+		usleep((p->die_time - p->eat_time) * 1000);
+		return (0);
+	}
+	usleep(p->sleep_time * 1000);
 
 	if (!is_termination(p, time))
 		return (0);
@@ -109,6 +127,8 @@ void	*routine(void *philo_info)
 	struct timeval	time;
 
 	p_info = (t_philo_profile *)philo_info;
+	gettimeofday(&time, NULL);
+	p_info->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
 	while (is_termination(p_info, &time))
 	{
 		if (!(p_info->r_fork))
