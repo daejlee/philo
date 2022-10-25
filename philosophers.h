@@ -1,6 +1,7 @@
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
-#include <pthread.h>
+# include <pthread.h>
+# include <sys/time.h>
 
 /*
 1. 각 철학자들의 프로파일 자식 구조체(t_philo_profile)와
@@ -44,8 +45,12 @@ typedef struct s_philo_manager
 	int				t_flag;
 }	t_philo_manager;
 
-
-int	ft_atoi(const char *nptr);
-int	prep_args(t_philo_args *p, char **argv);
+int		ft_atoi(const char *nptr);
+int		prep_args(t_philo_args *p, char **argv);
+int		is_termination(t_philo_profile *p_info, struct timeval *time);
+int		grab_eat_sleep(t_philo_profile *p, struct timeval *time);
+void	init_profile(t_philo_manager *manager, t_philo_args *args);
+int		init_manager(t_philo_manager *manager, t_philo_args args);
+int		recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
 
 #endif

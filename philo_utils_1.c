@@ -61,6 +61,6 @@ int	prep_args(t_philo_args *p, char **argv)
 	if (p->philo_num < 1 || p->die_time < 1
 		|| p->eat_time < 1 || p->sleep_time < 1
 		|| p->must_eat_times < -1)
-			return (1);
+		return (1);
 	return (0);
 }

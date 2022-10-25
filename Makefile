@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= main.c philo_utils_1.c
+SRC 		= main.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
 OBJ 		= $(SRC:.c=.o)
 LIBFT 		= ./libft_garage/libft.a
 LIBFT_DIR	= ./libft_garage
