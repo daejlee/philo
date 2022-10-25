@@ -199,4 +199,7 @@ int	main(int argc, char **argv)
 		pthread_join(manager.profile[i].thr, NULL);
 		i++;
 	}
+	pthread_mutex_destroy(&(manager.mutex));
+	free (manager.fork);
+	free (manager.profile);
 }
