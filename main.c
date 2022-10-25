@@ -5,26 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-/*
-int	check_dead_philo(t_philo_main *p)
-{
-	struct timeval	time;
-	int	i;
-
-	i = 0;
-	while (i < p->philo_num)
-	{
-		gettimeofday(&time, NULL);
-		if ((time.tv_usec * 1000 - p->recent_logs[i].eat) >= p->die_time)
-		{
-			printf("%i %i died\n", time.tv_usec * 1000, i);
-			return (0);
-		}
-		i++;
-	}
-	return (0);
-}
-*/
+// 쓰레드는 스택영역은 공유하지 않는다.
+// ./philo num die eat sleep must_eat
 
 void	init_profile(t_philo_manager *manager, t_philo_args args)
 {
@@ -66,13 +48,13 @@ int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 	*i_1 = 0;
 	*i_2 = 0;
 	gettimeofday(time, NULL);
-	p->r_eat = time->tv_usec;
+	p->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
 	p->r_sleep = 0;
 	p->r_think = 0;
 	*(p->eat_max) -= 1;
-	printf("%i %i has taken a fork.\n", p->r_eat / 1000, p->idx);
-	printf("%i %i has taken a fork.\n", p->r_eat / 1000, p->idx);
-	printf("%i %i is eating\n", p->r_eat / 1000, p->idx);
+	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
+	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
+	printf("%lu %i is eating\n", p->r_eat, p->idx);
 	pthread_mutex_unlock(p->mtx);
 
 	usleep(p->eat_time * 1000); //다른 스레드가 작동해야함
@@ -86,8 +68,8 @@ int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 	*i_1 = 1;
 	*i_2 = 1;
 	gettimeofday(time, NULL);
-	p->r_sleep = time->tv_usec;
-	printf("%i %i is sleeping\n", p->r_sleep / 1000, p->idx);
+	p->r_sleep = time->tv_sec / 100000 + time->tv_usec / 1000;
+	printf("%lu %i is sleeping\n", p->r_sleep, p->idx);
 	pthread_mutex_unlock(p->mtx);
 
 	usleep(p->sleep_time * 1000); //다른 스레드가 작동해야함
@@ -100,15 +82,15 @@ int	grab_n_eat(t_philo_profile *p, struct timeval *time)
 	}
 	p->r_sleep = 0;
 	gettimeofday(time, NULL);
-	p->r_think = time->tv_usec;
-	printf("%i %i is thinking\n", p->r_think / 1000, p->idx);
+	p->r_think = time->tv_sec / 100000 + time->tv_usec / 1000;
+	printf("%lu %i is thinking\n", p->r_think, p->idx);
 	pthread_mutex_unlock(p->mtx);
 	return (0);
 }
 
 int	is_termination(t_philo_profile *p_info, struct timeval *time)
 {
-	int	temp;
+	__uint64_t	temp;
 
 	pthread_mutex_lock(p_info->mtx);
 	if (*(p_info->t_flag_adr))
@@ -117,12 +99,12 @@ int	is_termination(t_philo_profile *p_info, struct timeval *time)
 		return (0);
 	}
 	gettimeofday(time, NULL);
-	temp = time->tv_usec;
-	if (p_info->r_eat - temp >= p_info->die_time * 1000
+	temp = time->tv_sec / 100000 + time->tv_usec / 1000;
+	if (p_info->r_eat >= p_info->die_time + temp
 		|| !p_info->eat_max)
 	{
 		*(p_info->t_flag_adr) = 1;
-		printf("%i %i died\n", temp / 1000, p_info->idx);
+		printf("%lu %i died\n", temp, p_info->idx);
 		pthread_mutex_unlock(p_info->mtx);
 		return (0);
 	}
@@ -149,9 +131,6 @@ void	*routine(void *philo_info)
 	}
 	return (0);
 }
-
-// 쓰레드는 스택영역은 공유하지 않는다.
-// ./philo num die eat sleep must_eat
 
 int	get_thread_mutex(t_philo_args p, t_philo_profile *profile)
 {

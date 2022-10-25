@@ -47,37 +47,7 @@ int	ft_atoi(const char *nptr)
 	res = outlier_check(res, sign);
 	return (res);
 }
-/*
-static int	get_slots(t_philo_main *p)
-{
-	int				i;
-	t_philo_time	*temp;
 
-	p->pthread = (pthread_t *)malloc(sizeof (pthread_t) * p->philo_num);
-	p->recent_logs = (t_philo_time *)malloc(sizeof (t_philo_time) * p->philo_num);
-	p->fork = (int *)malloc(sizeof (int) * p->philo_num);
-	if (!p->pthread || !p->recent_logs || !p->fork)
-	{
-		if (p->pthread)
-			free (p->pthread);
-		if (p->recent_logs)
-			free (p->recent_logs);
-		if (p->fork)
-			free (p->fork);
-		return (1);
-	}
-	i = 0;
-	while (i < p->philo_num)
-	{
-		p->fork[i] = 1;
-		temp = &(p->recent_logs[i++]);
-		temp->eat = 0;
-		temp->sleep = 0;
-		temp->think = 0;
-	}
-	return (0);
-}
-*/
 int	prep_args(t_philo_args *p, char **argv)
 {
 	p->philo_num = ft_atoi(argv[1]);

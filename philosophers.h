@@ -13,9 +13,9 @@
 typedef struct s_philo_profile
 {
 	int				idx;
-	int				r_eat;
-	int				r_sleep;
-	int				r_think;
+	__uint64_t		r_eat;
+	__uint64_t		r_sleep;
+	__uint64_t		r_think;
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
