@@ -173,7 +173,6 @@ int	main(int argc, char **argv)
 	t_philo_args	args;
 	t_philo_manager	manager;
 	int				mtx_id;
-	int				status;
 	int				i;
 
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
@@ -197,7 +196,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i < args.philo_num)
 	{
-		pthread_join(manager.profile[i].thr, (void *)&status);
+		pthread_join(manager.profile[i].thr, NULL);
 		i++;
 	}
 }
