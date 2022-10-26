@@ -6,9 +6,6 @@
 #include <fcntl.h> //O_CREAT flag
 #include <sys/wait.h> //waitpid
 
-#ifndef SEM_NAME
-# define SEM_NAME "/mysem"
-#endif
 
 /*
 모든 포크는 탁상 중앙에 위치한다.
@@ -42,31 +39,12 @@ void	*routine(void *philo_info)
 	return (0);
 }
 
-int	main(int argc, char **argv)
+int	get_philos()
 {
-	t_philo_args	args;
-	t_philo_manager	manager;
-	pid_t			*pid_arr;
-	sem_t			*sem;
 	int				child_count;
 	pid_t			pid;
 	int				status;
 
-
-	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
-	{
-		printf("invalid args\n");
-		return (0);
-	}
-	sem = sem_open(SEM_NAME, O_CREAT, 0644, args.philo_num);
-	if (sem == SEM_FAILED)
-		return (1);
-	pid_arr = (pid_t *)malloc(sizeof(pid_t) * args.philo_num);
-	if (!pid_arr)
-	{
-		sem_close(sem);
-		return (1);
-	}
 	child_count = args.philo_num;
 	while (child_count)
 	{
@@ -78,17 +56,26 @@ int	main(int argc, char **argv)
 		child_count--;
 		pid_arr[child_count] = pid;
 	}
-	child_count = args.philo_num;
-	while (child_count--)
-		waitpid(pid_arr[child_count], &status, 0);
+}
 
+int	main(int argc, char **argv)
+{
+	t_philo_args	args;
+	t_philo_manager	manager;
+	t_philo_profile	profile;
 
-
+	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
+	{
+		printf("invalid args\n");
+		return (0);
+	}
 	if (init_manager(&manager, args))
 		return (1);
-	init_profile(&manager, &args);
-	if (get_thread_mutex(args, manager.profile))
+	init_profile(&profile, args);
+	if (get_philos())
 		return (recover_thr_free_mem(&manager, args));
+	while (child_count--)
+		waitpid(pid_arr[child_count], &status, 0);
 	recover_thr_free_mem(&manager, args);
 	return (0);
 }

@@ -2,6 +2,7 @@
 	"files.associations": {
 		"stdlib.h": "c",
 		"philosophers.h": "c",
-		"philosophers_bonus.h": "c"
+		"philosophers_bonus.h": "c",
+		"stdio.h": "c"
 	}
 }
