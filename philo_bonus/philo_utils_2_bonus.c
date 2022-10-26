@@ -41,8 +41,14 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 		return (1);
 	}
 	if (manager->m_sem == -1)
+	{
 		manager->m_sem = NULL;
+		manager->m_sem_flag = 0;
+	}
 	else
+	{
 		manager->m_sem = sem_open(SEM_MUST_EAT, O_CREAT, 0644, args.philo_num);
+		manager->m_sem_flag = 1;
+	}
 	return (0);
 }

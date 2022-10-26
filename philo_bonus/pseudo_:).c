@@ -39,7 +39,7 @@ void	*routine(void *philo_info)
 	return (0);
 }
 
-int	get_philos()
+int	get_philos(t_philo_manager *manager, t_philo_args args)
 {
 	int				child_count;
 	pid_t			pid;

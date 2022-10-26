@@ -45,6 +45,7 @@ typedef struct s_philo_manager
 	pid_t			*pid_arr;
 	sem_t			*f_sem;
 	sem_t			*m_sem;
+	int				m_sem_flag;
 }	t_philo_manager;
 
 int		ft_atoi(const char *nptr);
