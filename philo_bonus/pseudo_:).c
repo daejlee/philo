@@ -3,9 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <semaphore.h>
-#include <fcntl.h> //O_CREAT flag
 #include <sys/wait.h> //waitpid
-
 
 /*
 모든 포크는 탁상 중앙에 위치한다.
@@ -13,33 +11,33 @@
 각 철학자는 프로세스가 되어야 한다. 하지만 메인 프로세스는 철학자가 되선 안된다.
 */
 
-void	*routine(void *philo_info)
+void	*routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
 {
-	t_philo_profile	*p_info;
 	struct timeval	time;
 
-	p_info = (t_philo_profile *)philo_info;
 	gettimeofday(&time, NULL);
-	p_info->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
-	while (is_termination(p_info, &time))
+	profile->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
+	while (is_termination(profile, &time))
 	{
-		if (!(p_info->r_fork))
+		if (philo_num == 1) //1명일 때.
 		{
-			usleep(p_info->die_time * 1000);
+			usleep(profile->die_time * 1000);
 			gettimeofday(&time, NULL);
 			printf("%lu 1 died\n", time.tv_sec / 100000 + time.tv_usec / 1000);
-			pthread_mutex_unlock(p_info->mtx);
 			break ;
 		}
-		else if (*(p_info->l_fork) && *(p_info->r_fork))
-			grab_eat_sleep(p_info, &time);
-		else
-			pthread_mutex_unlock(p_info->mtx);
+		else if (!sem_wait(manager->f_sem))
+		{
+			if (!sem_wait(manager->f_sem))
+				grab_eat_sleep(profile, &time, manager->m_sem);
+			else
+				sem_post(manager->f_sem);
+		}
 	}
 	return (0);
 }
 
-int	get_philos(t_philo_manager *manager, t_philo_args args)
+int	get_philos(t_philo_manager *manager, t_philo_args args, t_philo_profile *profile)
 {
 	int				child_count;
 	pid_t			pid;
@@ -52,7 +50,7 @@ int	get_philos(t_philo_manager *manager, t_philo_args args)
 		if (pid == -1)
 			return (fork_err());
 		else if (!pid)
-			routine();
+			routine(manager, profile, args.philo_num);
 		child_count--;
 		pid_arr[child_count] = pid;
 	}
@@ -71,8 +69,8 @@ int	main(int argc, char **argv)
 	}
 	if (init_manager(&manager, args))
 		return (1);
-	init_profile(&profile, args);
-	if (get_philos())
+	init_profile(&profile, args, manager.t_sem);
+	if (get_philos(&manager, args, &profile))
 		return (recover_thr_free_mem(&manager, args));
 	while (child_count--)
 		waitpid(pid_arr[child_count], &status, 0);

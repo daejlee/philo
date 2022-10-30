@@ -1,31 +1,19 @@
 #include "philosophers.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <semaphore.h>
 
-int	is_termination(t_philo_profile *p_info, struct timeval *time)
+int	is_termination(t_philo_profile *profile, struct timeval *time)
 {
 	__uint64_t	temp;
 
-	pthread_mutex_lock(p_info->mtx);
-	if (*(p_info->t_flag_adr))
-	{
-		pthread_mutex_unlock(p_info->mtx);
-		return (0);
-	}
-	if (!*(p_info->eat_max))
-	{
-		*(p_info->t_flag_adr) = 1;
-		pthread_mutex_unlock(p_info->mtx);
-		return (0);
-	}
+	if (sem_wait)
 	gettimeofday(time, NULL);
 	temp = time->tv_sec / 100000 + time->tv_usec / 1000;
-	if (temp >= p_info->die_time + p_info->r_eat)
+	if (temp >= profile->die_time + profile->r_eat)
 	{
-		*(p_info->t_flag_adr) = 1;
-		printf("%lu %i died\n", temp, p_info->idx);
-		pthread_mutex_unlock(p_info->mtx);
-		return (0);
+		printf("%lu %i died\n", temp, profile->idx);
+		exit (0);
 	}
 	return (1);
 }
@@ -54,25 +42,28 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	return (0);
 }
 
-int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
+int	grab_eat_sleep(t_philo_profile *p, struct timeval *time, sem_t *m_sem)
 {
-	*(p->l_fork) = 0;
-	*(p->r_fork) = 0;
 	gettimeofday(time, NULL);
 	p->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
 	p->r_sleep = 0;
 	p->r_think = 0;
-	*(p->eat_max) -= 1;
+	if (m_sem)
+	{
+		if (sem_wait(m_sem))
+			exit (0);
+	}
 	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
 	printf("%lu %i has taken a fork.\n", p->r_eat, p->idx);
 	printf("%lu %i is eating\n", p->r_eat, p->idx);
-	pthread_mutex_unlock(p->mtx);
 	if (p->eat_time >= p->die_time)
 	{
 		usleep(p->die_time * 1000);
 		return (0);
 	}
 	usleep(p->eat_time * 1000);
+	sem_post(manager->f_sem);
+	sem_post(manager->f_sem);
 	if (!is_termination(p, time))
 		return (0);
 	else

@@ -4,6 +4,8 @@
 		"philosophers.h": "c",
 		"pthread.h": "c",
 		"stdlib.h": "c",
-		"unistd.h": "c"
+		"unistd.h": "c",
+		"semaphore.h": "c",
+		"fcntl.h": "c"
 	}
 }
