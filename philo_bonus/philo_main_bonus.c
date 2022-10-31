@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <semaphore.h>
 #include <sys/wait.h> //waitpid
 
 /*
@@ -17,43 +16,43 @@ void	*routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
 
 	gettimeofday(&time, NULL);
 	profile->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
-	while (is_termination(profile, &time))
+	while (is_termination(profile, &time, manager))
 	{
 		if (philo_num == 1) //1명일 때.
 		{
 			usleep(profile->die_time * 1000);
 			gettimeofday(&time, NULL);
 			printf("%lu 1 died\n", time.tv_sec / 100000 + time.tv_usec / 1000);
-			break ;
+			exit(0);
 		}
 		else if (!sem_wait(manager->f_sem))
 		{
 			if (!sem_wait(manager->f_sem))
-				grab_eat_sleep(profile, &time, manager->m_sem);
+				grab_eat_sleep(profile, &time, manager);
 			else
 				sem_post(manager->f_sem);
 		}
 	}
-	return (0);
 }
 
 int	get_philos(t_philo_manager *manager, t_philo_args args, t_philo_profile *profile)
 {
 	int				child_count;
 	pid_t			pid;
-	int				status;
 
 	child_count = args.philo_num;
 	while (child_count)
 	{
+		profile->idx++;
 		pid = fork();
 		if (pid == -1)
-			return (fork_err());
-		else if (!pid)
+			return (1);
+		else if (!pid) //자식
 			routine(manager, profile, args.philo_num);
 		child_count--;
-		pid_arr[child_count] = pid;
+		manager->pid_arr[child_count] = pid;
 	}
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -61,6 +60,7 @@ int	main(int argc, char **argv)
 	t_philo_args	args;
 	t_philo_manager	manager;
 	t_philo_profile	profile;
+	int				child_cnt;
 
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
@@ -71,9 +71,11 @@ int	main(int argc, char **argv)
 		return (1);
 	init_profile(&profile, args, manager.t_sem);
 	if (get_philos(&manager, args, &profile))
-		return (recover_thr_free_mem(&manager, args));
-	while (child_count--)
-		waitpid(pid_arr[child_count], &status, 0);
-	recover_thr_free_mem(&manager, args);
+		return (free_mem(&manager));
+	child_cnt = args.philo_num;
+	waitpid(-1, NULL, 0);
+	free_mem(&manager);
+	printf ("no?\n");
+	system("leaks philo");
 	return (0);
 }

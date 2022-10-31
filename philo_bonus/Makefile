@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= main.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
+SRC 		= philo_main_bonus.c philo_utils_1_bonus.c philo_utils_2_bonus.c philo_grab_n_eat_bonus.c
 OBJ 		= $(SRC:.c=.o)
 LIBFT 		= ./libft_garage/libft.a
 LIBFT_DIR	= ./libft_garage
@@ -29,15 +29,12 @@ endif
 
 all : $(NAME)
 
-$(NAME) : $(OBJ_FILES) $(LIBFT)
+$(NAME) : $(OBJ_FILES)
 	$(CC) -g -pthread $(CFLAGS) -o $(NAME) $(SRC)
 #	$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -lft -L$(LIBFT_DIR)
 
 $(OBJ_FILES) : $(SRC_FILES)
 	$(CC) $(CFLAGS) -c $(SRC_FILES)
-
-$(LIBFT) :
-	cd $(LIBFT_DIR); $(MAKE)
 
 clean :
 	rm -f $(OBJ_FILES) $(BONUS_OBJ)

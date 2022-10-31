@@ -2,6 +2,7 @@
 # define PHILOSOPHERS_BONUS_H
 # include <pthread.h>
 # include <sys/time.h>
+# include <semaphore.h>
 
 /*
 manager의 역할은 pid_t배열, f_sem, m_sem이 대체할 수 있을 듯.
@@ -14,15 +15,15 @@ manager의 역할은 pid_t배열, f_sem, m_sem이 대체할 수 있을 듯.
 */
 
 #ifndef SEM_FORK
-# define SEM_FORK "/mysemfork"
+# define SEM_FORK "/mysem_fork"
 #endif
 
 #ifndef SEM_MUST_EAT
-# define SEM_MUST_EAT "/mysemmusteat"
+# define SEM_MUST_EAT "/mysem_musteat"
 #endif
 
 #ifndef SEM_TERMINATE
-# define SEM_TERMINATE "/mysemterminate"
+# define SEM_TERMINATE "/mysem_terminate"
 #endif
 
 typedef struct s_philo_profile
@@ -48,19 +49,19 @@ typedef struct s_philo_args
 
 typedef struct s_philo_manager
 {
+	int				philo_num;
 	pid_t			*pid_arr;
 	sem_t			*f_sem;
 	sem_t			*m_sem;
 	sem_t			*t_sem;
-	int				m_sem_flag;
 }	t_philo_manager;
 
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
-int		is_termination(t_philo_profile *p_info, struct timeval *time);
-int		grab_eat_sleep(t_philo_profile *p, struct timeval *time);
-void	init_profile(t_philo_profile *profile, t_philo_args args);
+int		is_termination(t_philo_profile *profile, struct timeval *time, t_philo_manager *manager);
+int		grab_eat_sleep(t_philo_profile *p, struct timeval *time, t_philo_manager *manager);
+void	init_profile(t_philo_profile *profile, t_philo_args args, sem_t *t_sem);
 int		init_manager(t_philo_manager *manager, t_philo_args args);
-int		recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
+int		free_mem(t_philo_manager *manager);
 
 #endif
