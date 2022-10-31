@@ -7,11 +7,18 @@
 int	kill_all(pid_t *pid_arr, int philo_num)
 {
 	int	i;
+	pid_t	pid;
 	
-	i = 0;
-	while (i < philo_num)
+	pid = fork();
+	if (!pid)
 	{
-		kill(pid_arr[i++], SIGKILL);
+		i = 0;
+		while (i < philo_num)
+		{
+			printf("%d\n", pid_arr[i]);
+			kill(pid_arr[i++], SIGKILL);
+		}
+		exit (0);
 	}
 	return (0);
 }

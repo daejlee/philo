@@ -10,7 +10,11 @@
 각 철학자는 프로세스가 되어야 한다. 하지만 메인 프로세스는 철학자가 되선 안된다.
 */
 
-void	*routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
+/*
+kill_all 함수가 메인 프로세스를 죽여버리는 문제가 발생함. -> 해결 요망.
+*/
+
+void	routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
 {
 	struct timeval	time;
 
@@ -61,7 +65,10 @@ int	main(int argc, char **argv)
 	t_philo_manager	manager;
 	t_philo_profile	profile;
 	int				child_cnt;
+	pid_t			temp;
 
+	temp = getpid();
+	printf("%d is main process's id.\n", temp);
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
 		printf("invalid args\n");
