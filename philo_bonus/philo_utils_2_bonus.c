@@ -29,6 +29,7 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 	sem_unlink(SEM_TERMINATE);
 	sem_unlink(SEM_MUST_EAT);
 	manager->philo_num = args.philo_num;
+	manager->must_eat_times = args.must_eat_times;
 	manager->f_sem = sem_open(SEM_FORK, O_CREAT, 0644, args.philo_num);
 	if (manager->f_sem == SEM_FAILED)
 		return (1);
@@ -42,7 +43,7 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 		manager->m_sem = NULL;
 	else
 	{
-		manager->m_sem = sem_open(SEM_MUST_EAT, O_CREAT, 0644, args.philo_num);
+		manager->m_sem = sem_open(SEM_MUST_EAT, O_CREAT, 0644, 0);
 		if (!manager->m_sem)
 		{
 			sem_close(manager->f_sem);

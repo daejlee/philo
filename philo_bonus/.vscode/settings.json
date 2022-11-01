@@ -4,6 +4,8 @@
 		"philosophers.h": "c",
 		"philosophers_bonus.h": "c",
 		"stdio.h": "c",
-		"wait.h": "c"
+		"wait.h": "c",
+		"unistd.h": "c",
+		"signal.h": "c"
 	}
 }

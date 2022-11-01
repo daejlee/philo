@@ -50,6 +50,7 @@ typedef struct s_philo_args
 typedef struct s_philo_manager
 {
 	int				philo_num;
+	int				must_eat_times;
 	pid_t			*pid_arr;
 	sem_t			*f_sem;
 	sem_t			*m_sem;

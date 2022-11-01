@@ -3,15 +3,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h> //waitpid
+#include <signal.h> //SIGKILL
 
 /*
 모든 포크는 탁상 중앙에 위치한다.
 메모리에는 아무런 상태가 없지만 사용 가능한 포크의 수는 세마포어로 나타낸다.
 각 철학자는 프로세스가 되어야 한다. 하지만 메인 프로세스는 철학자가 되선 안된다.
-*/
-
-/*
-kill_all 함수가 메인 프로세스를 죽여버리는 문제가 발생함. -> 해결 요망.
 */
 
 void	routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
@@ -59,16 +56,32 @@ int	get_philos(t_philo_manager *manager, t_philo_args args, t_philo_profile *pro
 	return (0);
 }
 
+int	kill_all(pid_t *pid_arr, int philo_num)
+{
+	int	i;
+
+	i = 0;
+	while (i < philo_num)
+		kill(pid_arr[i++], SIGKILL);
+	return (0);
+}
+
+int	check(t_philo_manager *manager)
+{
+	int	i;
+
+	i = manager->must_eat_times;
+	while (i--)
+		sem_wait(manager->m_sem);
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philo_args	args;
 	t_philo_manager	manager;
 	t_philo_profile	profile;
-	int				child_cnt;
-	pid_t			temp;
 
-	temp = getpid();
-	printf("%d is main process's id.\n", temp);
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
 		printf("invalid args\n");
@@ -79,10 +92,12 @@ int	main(int argc, char **argv)
 	init_profile(&profile, args, manager.t_sem);
 	if (get_philos(&manager, args, &profile))
 		return (free_mem(&manager));
-	child_cnt = args.philo_num;
-	waitpid(-1, NULL, 0);
+	if (manager.m_sem)
+		check(&manager);
+	else
+		waitpid(-1, NULL, 0);
+	kill_all(manager.pid_arr, args.philo_num);
 	free_mem(&manager);
-	printf ("no?\n");
 	system("leaks philo");
 	return (0);
 }
