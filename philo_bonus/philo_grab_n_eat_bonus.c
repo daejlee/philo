@@ -14,8 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int	is_termination(t_philo_profile *profile, struct timeval *time,
-	t_philo_manager *manager)
+void	is_termination(t_philo_profile *profile, struct timeval *time)
 {
 	__uint64_t	temp;
 
@@ -29,9 +28,6 @@ int	is_termination(t_philo_profile *profile, struct timeval *time,
 		printf("%llu %i died\n", temp, profile->idx);
 		exit (0);
 	}
-	manager->philo_num++;
-	manager->philo_num--;
-	return (1);
 }
 
 static int	gne_sleep(t_philo_profile *p, struct timeval *time,
@@ -48,8 +44,7 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time,
 		return (0);
 	}
 	usleep(p->sleep_time * 1000);
-	if (!is_termination(p, time, manager))
-		return (0);
+	is_termination(p, time);
 	p->r_sleep = 0;
 	gettimeofday(time, NULL);
 	p->r_think = time->tv_sec / 100000 + time->tv_usec / 1000;
@@ -77,8 +72,6 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time,
 	usleep(p->eat_time * 1000);
 	sem_post(manager->f_sem);
 	sem_post(manager->f_sem);
-	if (!is_termination(p, time, manager))
-		return (0);
-	else
-		return (gne_sleep(p, time, manager));
+	is_termination(p, time);
+	return (gne_sleep(p, time, manager));
 }

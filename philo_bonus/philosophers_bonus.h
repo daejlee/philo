@@ -48,8 +48,7 @@ typedef struct s_philo_manager
 
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
-int		is_termination(t_philo_profile *profile,
-			struct timeval *time, t_philo_manager *manager);
+void	is_termination(t_philo_profile *profile, struct timeval *time);
 int		grab_eat_sleep(t_philo_profile *p,
 			struct timeval *time, t_philo_manager *manager);
 void	init_profile(t_philo_profile *profile, t_philo_args args, sem_t *t_sem);
