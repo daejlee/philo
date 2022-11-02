@@ -14,6 +14,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
+#include <stdlib.h>
 
 typedef struct s_philo_profile
 {

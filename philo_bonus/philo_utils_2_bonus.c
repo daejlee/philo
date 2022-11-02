@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers_bonus.h"
-#include <stdlib.h>
 #include <fcntl.h>
 
 #ifndef SEM_FORK

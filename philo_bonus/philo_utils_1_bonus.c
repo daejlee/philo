@@ -9,9 +9,7 @@
 /*   Updated: 2022/11/02 13:33:49 by daejlee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers_bonus.h"
-#include <stdlib.h>
 #include <unistd.h>
 
 static const char	*blank_check(const char *nptr)
