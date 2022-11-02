@@ -40,7 +40,7 @@ void	init_profile(t_philo_manager *manager, t_philo_args *args)
 	}
 }
 
-int	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
+void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 {
 	int	i;
 
@@ -53,7 +53,6 @@ int	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 	pthread_mutex_destroy(&(manager->mutex));
 	free (manager->fork);
 	free (manager->profile);
-	return (1);
 }
 
 int	init_manager(t_philo_manager *manager, t_philo_args args)

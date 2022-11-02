@@ -54,6 +54,6 @@ int		is_termination(t_philo_profile *p_info, struct timeval *time);
 int		grab_eat_sleep(t_philo_profile *p, struct timeval *time);
 void	init_profile(t_philo_manager *manager, t_philo_args *args);
 int		init_manager(t_philo_manager *manager, t_philo_args args);
-int		recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
+void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
 
 #endif

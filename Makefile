@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= philo.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
+SRC 		= philo_main.c philo_utils_1.c philo_utils_2.c philo_grab_n_eat.c
 OBJ 		= $(SRC:.c=.o)
 
 ifdef WITH_BONUS
@@ -44,4 +44,4 @@ re :
 	$(MAKE) all
 
 bonus :
-	cd ./philo_bonus; $(MAKE)	
+	cd ./philo_bonus; $(MAKE)

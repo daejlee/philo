@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   philo_main.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: daejlee <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void	*routine(void *philo_info)
+static void	*routine(void *philo_info)
 {
 	t_philo_profile	*p_info;
 	struct timeval	time;
@@ -40,7 +40,7 @@ void	*routine(void *philo_info)
 	return (0);
 }
 
-int	get_thread_mutex(t_philo_args p, t_philo_profile *profile)
+static int	get_thread_mutex(t_philo_args p, t_philo_profile *profile)
 {
 	int	i;
 	int	thr_id;
@@ -75,7 +75,10 @@ int	main(int argc, char **argv)
 		return (1);
 	init_profile(&manager, &args);
 	if (get_thread_mutex(args, manager.profile))
-		return (recover_thr_free_mem(&manager, args));
+	{
+		recover_thr_free_mem(&manager, args);
+		return (1);
+	}
 	recover_thr_free_mem(&manager, args);
 	return (0);
 }
