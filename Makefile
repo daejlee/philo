@@ -6,7 +6,7 @@
 #    By: daejlee <daejlee@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/09 15:07:02 by daejlee           #+#    #+#              #
-#    Updated: 2022/09/09 15:07:02 by daejlee          ###   ########.fr        #
+#    Updated: 2022/11/02 13:32:20 by daejlee          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME 		= philo
@@ -33,10 +33,15 @@ $(OBJ_FILES) : $(SRC_FILES)
 
 clean :
 	rm -f $(OBJ_FILES) $(BONUS_OBJ)
+	make -C ./philo_bonus/ clean
 
 fclean :
 	rm -f $(OBJ_FILES) $(BONUS_OBJ) $(NAME)
+	make -C ./philo_bonus/ fclean
 
 re :
 	$(MAKE) fclean
 	$(MAKE) all
+
+bonus :
+	cd ./philo_bonus; $(MAKE)	

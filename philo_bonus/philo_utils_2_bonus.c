@@ -1,6 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_utils_2_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: daejlee <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/02 13:33:52 by daejlee           #+#    #+#             */
+/*   Updated: 2022/11/02 13:33:53 by daejlee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "philosophers_bonus.h"
 #include <stdlib.h>
-#include <fcntl.h> //O_CREAT flag
+#include <fcntl.h>
+
+#ifndef SEM_FORK
+# define SEM_FORK "/mysem_fork"
+#endif
+
+#ifndef SEM_MUST_EAT
+# define SEM_MUST_EAT "/mysem_musteat"
+#endif
+
+#ifndef SEM_TERMINATE
+# define SEM_TERMINATE "/mysem_terminate"
+#endif
 
 int	free_mem(t_philo_manager *manager)
 {
@@ -23,13 +46,8 @@ void	init_profile(t_philo_profile *profile, t_philo_args args, sem_t *t_sem)
 	profile->t_sem = t_sem;
 }
 
-int	init_manager(t_philo_manager *manager, t_philo_args args)
+static int	get_sem(t_philo_manager *manager, t_philo_args args)
 {
-	sem_unlink(SEM_FORK);
-	sem_unlink(SEM_TERMINATE);
-	sem_unlink(SEM_MUST_EAT);
-	manager->philo_num = args.philo_num;
-	manager->must_eat_times = args.must_eat_times;
 	manager->f_sem = sem_open(SEM_FORK, O_CREAT, 0644, args.philo_num);
 	if (manager->f_sem == SEM_FAILED)
 		return (1);
@@ -51,6 +69,18 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 			return (1);
 		}
 	}
+	return (0);
+}
+
+int	init_manager(t_philo_manager *manager, t_philo_args args)
+{
+	sem_unlink(SEM_FORK);
+	sem_unlink(SEM_TERMINATE);
+	sem_unlink(SEM_MUST_EAT);
+	manager->philo_num = args.philo_num;
+	manager->must_eat_times = args.must_eat_times;
+	if (get_sem(manager, args))
+		return (1);
 	manager->pid_arr = (pid_t *)malloc(sizeof(pid_t) * args.philo_num);
 	if (!manager->pid_arr)
 	{

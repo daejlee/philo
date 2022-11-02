@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_main_bonus.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: daejlee <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/02 13:33:36 by daejlee           #+#    #+#             */
+/*   Updated: 2022/11/02 13:33:57 by daejlee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "philosophers_bonus.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/wait.h> //waitpid
-#include <signal.h> //SIGKILL
+#include <sys/wait.h>
+#include <signal.h>
 
 /*
 모든 포크는 탁상 중앙에 위치한다.
@@ -11,7 +22,8 @@
 각 철학자는 프로세스가 되어야 한다. 하지만 메인 프로세스는 철학자가 되선 안된다.
 */
 
-void	routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
+void	routine(t_philo_manager *manager,
+	t_philo_profile *profile, int philo_num)
 {
 	struct timeval	time;
 
@@ -19,7 +31,7 @@ void	routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
 	profile->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
 	while (is_termination(profile, &time, manager))
 	{
-		if (philo_num == 1) //1명일 때.
+		if (philo_num == 1)
 		{
 			usleep(profile->die_time * 1000);
 			gettimeofday(&time, NULL);
@@ -36,7 +48,8 @@ void	routine(t_philo_manager *manager, t_philo_profile *profile, int philo_num)
 	}
 }
 
-int	get_philos(t_philo_manager *manager, t_philo_args args, t_philo_profile *profile)
+int	get_philos(t_philo_manager *manager,
+	t_philo_args args, t_philo_profile *profile)
 {
 	int				child_count;
 	pid_t			pid;
@@ -48,7 +61,7 @@ int	get_philos(t_philo_manager *manager, t_philo_args args, t_philo_profile *pro
 		pid = fork();
 		if (pid == -1)
 			return (1);
-		else if (!pid) //자식
+		else if (!pid)
 			routine(manager, profile, args.philo_num);
 		child_count--;
 		manager->pid_arr[child_count] = pid;
