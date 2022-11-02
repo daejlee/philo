@@ -12,7 +12,6 @@
 #include "philosophers_bonus.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 void	is_termination(t_philo_profile *profile, struct timeval *time)
 {
