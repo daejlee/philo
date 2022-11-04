@@ -18,28 +18,32 @@
 /* time vals are mixed up. -> need revising.
 let's use just one struct time and let manager handles it.
 -> this causes a lot of inconvenience.
-let's use one struct time per one philo */
+let's use one struct time per one philo
+-> this causes difference of time criteria between philos.
+let's use struct time from the MAIN THREAD ONLY.
+*/
 
 static void	*routine(void *philo_info)
 {
 	t_philo_profile	*p_info;
-	struct timeval	time;
+	struct timeval	*time;
 
 	p_info = (t_philo_profile *)philo_info;
-	gettimeofday(&time, NULL);
-	p_info->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
-	while (is_termination(p_info, &time))
+	time = p_info->time_adr;
+	gettimeofday(time, NULL);
+	p_info->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
+	while (is_termination(p_info, time))
 	{
 		if (!(p_info->m_fork_slot[1])) // 1명일 때.
 		{
 			usleep(p_info->die_time * 1000);
-			gettimeofday(&time, NULL);
-			printf("%ld 1 died\n", time.tv_sec / 100000 + time.tv_usec / 1000);
+			gettimeofday(time, NULL);
+			printf("%ld 1 died\n", time->tv_sec / 100000 + time->tv_usec / 1000);
 			break ;
 		}
 		pthread_mutex_lock(p_info->m_fork_slot[0]);
 		pthread_mutex_lock(p_info->m_fork_slot[1]);
-		grab_eat_sleep(p_info, &time);
+		grab_eat_sleep(p_info, time);
 	}
 	return (0);
 }

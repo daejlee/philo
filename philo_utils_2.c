@@ -26,6 +26,7 @@ void	init_profile(t_philo_manager *manager, t_philo_args *args)
 		manager->profile[i].die_time = args->die_time;
 		manager->profile[i].eat_time = args->eat_time;
 		manager->profile[i].sleep_time = args->sleep_time;
+		manager->profile[i].time_adr = &manager->time;
 		if (args->eat_max != -1)
 			manager->profile[i].eat_max_adr = &(args->eat_max);
 		else
@@ -38,6 +39,7 @@ void	init_profile(t_philo_manager *manager, t_philo_args *args)
 			manager->profile[i].m_fork_slot[1] = manager->m_fork[0];
 		else
 			manager->profile[i].m_fork_slot[1] = manager->m_fork[i + 1];
+		manager->profile[i].m_time_adr = &manager->m_time;
 		manager->profile[i].m_eat_max_adr = &manager->m_eat_max;
 		manager->profile[i].m_t_flag_adr = &manager->m_t_flag;
 		i++;
@@ -54,9 +56,10 @@ void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 		pthread_join(manager->profile[i].thr, NULL);
 		i++;
 	}
-	pthread_mutex_destroy(&manager->m_eat_max);
+	pthread_mutex_destroy(&manager->m_time);
+	pthread_mutex_destroy(&manager->m_t_flag);
 	if (args.eat_max != -1)
-		pthread_mutex_destroy(&manager->m_t_flag);
+		pthread_mutex_destroy(&manager->m_eat_max);
 	i = 0;
 	while (i < args.philo_num)
 		free(manager->m_fork[i++]);
@@ -79,19 +82,31 @@ int	init_mtx(t_philo_manager *manager, t_philo_args args)
 {
 	int	i;
 
-	if (pthread_mutex_init(&manager->m_t_flag, NULL))
+	if (pthread_mutex_init(&manager->m_time, NULL))
 		return (1);
+	if (pthread_mutex_init(&manager->m_t_flag, NULL))
+	{
+		pthread_mutex_destroy(&manager->m_time);
+		return (1);
+	}
 	if (args.eat_max != -1)
 	{
 		if (pthread_mutex_init(&manager->m_eat_max, NULL))
 		{
+			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
 			return (1);
 		}
 	}
 	manager->m_fork = (pthread_mutex_t **)malloc(sizeof (pthread_mutex_t *) * args.philo_num);
 	if (!manager->m_fork)
+	{
+		pthread_mutex_destroy(&manager->m_time);
+		pthread_mutex_destroy(&manager->m_t_flag);
+		if (args.eat_max != -1)
+			pthread_mutex_destroy(&manager->m_eat_max);
 		return (1);
+	}
 	i = 0;
 	while (i < args.philo_num)
 	{
@@ -101,6 +116,7 @@ int	init_mtx(t_philo_manager *manager, t_philo_args args)
 			while (i--)
 				free(manager->m_fork[i]);
 			free(manager->m_fork);
+			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
 			if (args.eat_max != -1)
 				pthread_mutex_destroy(&manager->m_eat_max);
@@ -114,6 +130,7 @@ int	init_mtx(t_philo_manager *manager, t_philo_args args)
 				free(manager->m_fork[i]);
 			}
 			free(manager->m_fork);
+			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
 			if (args.eat_max != -1)
 				pthread_mutex_destroy(&manager->m_eat_max);

@@ -26,6 +26,8 @@ typedef struct s_philo_profile
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
+	struct timeval	*time_adr;
+	pthread_mutex_t	*m_time_adr;
 	int				*eat_max_adr;
 	pthread_mutex_t	*m_eat_max_adr;
 	int				*t_flag_adr;
@@ -41,6 +43,8 @@ typedef struct s_philo_manager
 	pthread_mutex_t	m_t_flag;
 	int				eat_max;
 	pthread_mutex_t	m_eat_max;
+	struct timeval	time;
+	pthread_mutex_t	m_time;
 	pthread_mutex_t	**m_fork;
 }	t_philo_manager;
 
