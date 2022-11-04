@@ -23,25 +23,23 @@ let's use one struct time per one philo */
 static void	*routine(void *philo_info)
 {
 	t_philo_profile	*p_info;
+	struct timeval	time;
 
 	p_info = (t_philo_profile *)philo_info;
-	pthread_mutex_lock(&p_info->m_time);
-	gettimeofday(p_info->time_adr, NULL);
-	p_info->r_eat = p_info->time_adr.tv_sec / 100000 + p_info->time_adr->tv_usec / 1000;
-	while (is_termination(p_info, p_info->time_adr))
+	gettimeofday(&time, NULL);
+	p_info->r_eat = time.tv_sec / 100000 + time.tv_usec / 1000;
+	while (is_termination(p_info, &time))
 	{
-		if (!(p_info->r_fork))
+		if (!(p_info->m_fork_slot[1])) // 1명일 때.
 		{
 			usleep(p_info->die_time * 1000);
-			gettimeofday(p_info->time_adr, NULL);
-			printf("%ld 1 died\n", time->tv_sec / 100000 + time->tv_usec / 1000);
-			pthread_mutex_unlock(p_info->mtx);
+			gettimeofday(&time, NULL);
+			printf("%ld 1 died\n", time.tv_sec / 100000 + time.tv_usec / 1000);
 			break ;
 		}
-		else if (*(p_info->l_fork) && *(p_info->r_fork))
-			grab_eat_sleep(p_info, p_info->time_adr);
-		else
-			pthread_mutex_unlock(p_info->mtx);
+		pthread_mutex_lock(p_info->m_fork_slot[0]);
+		pthread_mutex_lock(p_info->m_fork_slot[1]);
+		grab_eat_sleep(p_info, &time);
 	}
 	return (0);
 }
@@ -54,33 +52,9 @@ static int	get_threads(t_philo_args args, t_philo_profile *profile)
 	while (i < args.philo_num)
 	{
 		if (pthread_create(&(profile[i].thr), NULL,
-			routine, &(profile[i])) < 0);
+			routine, &(profile[i])) < 0)
 			return (1);
 		i++;
-	}
-	return (0);
-}
-
-int	init_mtx(t_philo_manager *manager, t_philo_args args)
-{
-	unsigned int	i;
-
-	manager->m_fork = (pthread_mutex_t *)(sizeof (pthread_mutex_t) * args.philo_num);
-	if (!manager->m_fork)
-		return (1);
-	while (i < args.philo_num)
-	{
-		if (pthread_mutex_init(&manager->m_fork[i], NULL))
-		{
-			while (i--)
-				pthread_mutex_destroy(&manager->m_fork[i]);
-			return (1);
-		}
-	}
-	if (pthread_mutex_init(&manager->m_time, NULL))
-	{
-		pthread_mutex_destroy(&manager->m_time);
-		return (1);
 	}
 	return (0);
 }
@@ -89,7 +63,6 @@ int	main(int argc, char **argv)
 {
 	t_philo_args	args;
 	t_philo_manager	manager;
-	int				mtx_id;
 
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
