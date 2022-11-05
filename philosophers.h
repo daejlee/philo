@@ -20,9 +20,9 @@
 typedef struct s_philo_profile
 {
 	int				idx;
-	__uint64_t		r_eat;
-	__uint64_t		r_sleep;
-	__uint64_t		r_think;
+	struct timeval	r_eat;
+	struct timeval	r_sleep;
+	struct timeval	r_think;
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
@@ -59,7 +59,7 @@ typedef struct s_philo_args
 
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
-int		is_termination(t_philo_profile *p_info, struct timeval *time);
+int		is_termination(t_philo_profile *p_info);
 int		grab_eat_sleep(t_philo_profile *p, struct timeval *time);
 void	init_profile(t_philo_manager *manager, t_philo_args *args);
 int		init_manager(t_philo_manager *manager, t_philo_args args);

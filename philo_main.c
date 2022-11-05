@@ -27,18 +27,22 @@ static void	*routine(void *philo_info)
 {
 	t_philo_profile	*p_info;
 	struct timeval	*time;
+	__int64_t		temp;
 
 	p_info = (t_philo_profile *)philo_info;
 	time = p_info->time_adr;
+	pthread_mutex_lock(p_info->m_time_adr);
 	gettimeofday(time, NULL);
-	p_info->r_eat = time->tv_sec / 100000 + time->tv_usec / 1000;
-	while (is_termination(p_info, time))
+	p_info->r_eat = *time;
+	pthread_mutex_unlock(p_info->m_time_adr);
+	while (is_termination(p_info))
 	{
 		if (!(p_info->m_fork_slot[1])) // 1명일 때.
 		{
 			usleep(p_info->die_time * 1000);
 			gettimeofday(time, NULL);
-			printf("%ld 1 died\n", time->tv_sec / 100000 + time->tv_usec / 1000);
+			temp = time->tv_sec * 1000 + time->tv_usec / 1000;
+			printf("%ld 1 died\n", temp);
 			break ;
 		}
 		pthread_mutex_lock(p_info->m_fork_slot[0]);

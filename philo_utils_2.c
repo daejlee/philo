@@ -20,9 +20,6 @@ void	init_profile(t_philo_manager *manager, t_philo_args *args)
 	while (i < args->philo_num)
 	{
 		manager->profile[i].idx = i + 1;
-		manager->profile[i].r_eat = 0;
-		manager->profile[i].r_sleep = 0;
-		manager->profile[i].r_think = 0;
 		manager->profile[i].die_time = args->die_time;
 		manager->profile[i].eat_time = args->eat_time;
 		manager->profile[i].sleep_time = args->sleep_time;
