@@ -25,29 +25,29 @@ let's use struct time from the MAIN THREAD ONLY.
 
 static void	*routine(void *philo_info)
 {
-	t_philo_profile	*p_info;
+	t_philo_profile	*p;
 	struct timeval	*time;
 	__int64_t		temp;
 
-	p_info = (t_philo_profile *)philo_info;
-	time = p_info->time_adr;
-	pthread_mutex_lock(p_info->m_time_adr);
+	p = (t_philo_profile *)philo_info;
+	time = p->time_adr;
+	pthread_mutex_lock(p->m_time_adr);
 	gettimeofday(time, NULL);
-	p_info->r_eat = *time;
-	pthread_mutex_unlock(p_info->m_time_adr);
-	while (is_termination(p_info))
+	p->r_eat = *time;
+	pthread_mutex_unlock(p->m_time_adr);
+	while (is_termination(p))
 	{
-		if (!(p_info->m_fork_slot[1])) // 1명일 때.
+		if (!(p->m_fork_slot[1])) // 1명일 때.
 		{
-			usleep(p_info->die_time * 1000);
+			usleep(p->die_time * 1000);
 			gettimeofday(time, NULL);
-			temp = time->tv_sec * 1000 + time->tv_usec / 1000;
+			temp = (time->tv_sec - p->time_init_val) * 1000 + time->tv_usec / 1000;
 			printf("%ld 1 died\n", temp);
 			break ;
 		}
-		pthread_mutex_lock(p_info->m_fork_slot[0]);
-		pthread_mutex_lock(p_info->m_fork_slot[1]);
-		grab_eat_sleep(p_info, time);
+		pthread_mutex_lock(p->m_fork_slot[0]);
+		pthread_mutex_lock(p->m_fork_slot[1]);
+		grab_eat_sleep(p, time);
 	}
 	return (0);
 }
@@ -72,6 +72,7 @@ int	main(int argc, char **argv)
 	t_philo_args	args;
 	t_philo_manager	manager;
 
+	gettimeofday(&manager.time, NULL);
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
 		printf("invalid args\n");

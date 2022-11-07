@@ -17,6 +17,7 @@
 // 사용하는 공유자원	-> int t_flag, int eat_max
 // 사용하는 뮤텍스		-> m_t_flag, m_eat_max, fork_arr
 
+// 헤더 변수들 정리..
 typedef struct s_philo_profile
 {
 	int				idx;
@@ -26,6 +27,7 @@ typedef struct s_philo_profile
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
+	__int64_t		time_init_val;
 	struct timeval	*time_adr;
 	pthread_mutex_t	*m_time_adr;
 	int				*eat_max_adr;

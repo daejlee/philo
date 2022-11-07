@@ -11,13 +11,14 @@ int	main()
 {
 	struct timeval	time;
 
+	gettimeofday(&time, NULL);
+	__int64_t init = time.tv_sec;
 	int	i = 0;
 	while (i++ < 10)
 	{
 	gettimeofday(&time, NULL);
-	printf("%lu, %lu\n", time.tv_sec , time.tv_usec);
-	printf("%lu, %lu\n", (time.tv_sec % 10) * 1000000 , time.tv_usec);
-	printf("%lu\n", (time.tv_sec % 10) * 1000 + time.tv_usec) / 1000;
+	printf("%lu, %lu\n", time.tv_sec - init , time.tv_usec / 1000);
+	printf("%lu\n", (time.tv_sec - init) * 1000 + time.tv_usec / 1000);
 	usleep(200000);
 	}
 	// gettimeofday(&time, NULL);
