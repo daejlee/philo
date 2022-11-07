@@ -67,9 +67,7 @@ void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 	i = 0;
 	while (i < args.philo_num)
 	{
-		printf ("%i\n", i);
-		free(manager->m_fork[i]);
-		i++;
+		free(manager->m_fork[i++]);
 	}
 	free (manager->m_fork);
 	free (manager->profile);

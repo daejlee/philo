@@ -37,6 +37,7 @@ static void	*routine(void *philo_info)
 	pthread_mutex_unlock(p->m_time_adr);
 	while (is_termination(p))
 	{
+		pthread_mutex_unlock(p->m_t_flag_adr);
 		if (!(p->m_fork_slot[1])) // 1명일 때.
 		{
 			usleep(p->die_time * 1000);
@@ -45,10 +46,19 @@ static void	*routine(void *philo_info)
 			printf("%ld 1 died\n", temp);
 			break ;
 		}
+		pthread_mutex_lock(p->m_time_adr);
+		gettimeofday(time, NULL);
+		temp = (time->tv_sec - p->time_init_val) * 1000 + time->tv_usec / 1000;
+		pthread_mutex_unlock(p->m_time_adr);
+		// dead lock!
 		pthread_mutex_lock(p->m_fork_slot[0]);
+		printf("%lu %i has taken a fork.\n", temp, p->idx);
 		pthread_mutex_lock(p->m_fork_slot[1]);
-		grab_eat_sleep(p, time);
+		printf("%lu %i has taken a fork.\n", temp, p->idx);
+		if (grab_eat_sleep(p, time))
+			break ;
 	}
+	pthread_mutex_unlock(p->m_t_flag_adr);
 	return (0);
 }
 
