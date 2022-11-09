@@ -34,6 +34,8 @@ typedef struct s_philo_profile
 	pthread_mutex_t	*m_eat_max_adr;
 	int				*t_flag_adr;
 	pthread_mutex_t	*m_t_flag_adr;
+	int				*fork_stat[2];
+	pthread_mutex_t	*m_fork_stat;
 	pthread_mutex_t	*m_fork_slot[2];
 	pthread_t		thr;
 }	t_philo_profile;
@@ -41,12 +43,14 @@ typedef struct s_philo_profile
 typedef struct s_philo_manager
 {
 	t_philo_profile	*profile;
+	struct timeval	time;
+	pthread_mutex_t	m_time;
 	int				t_flag;
 	pthread_mutex_t	m_t_flag;
 	int				eat_max;
 	pthread_mutex_t	m_eat_max;
-	struct timeval	time;
-	pthread_mutex_t	m_time;
+	int				*fork_stat;
+	pthread_mutex_t	m_fork_stat;
 	pthread_mutex_t	**m_fork;
 }	t_philo_manager;
 
@@ -67,5 +71,6 @@ void	init_profile(t_philo_manager *manager, t_philo_args *args);
 int		init_manager(t_philo_manager *manager, t_philo_args args);
 void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
 int		init_mtx(t_philo_manager *manager, t_philo_args args);
+void	*routine(void *philo_info);
 
 #endif

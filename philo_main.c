@@ -23,45 +23,6 @@ let's use one struct time per one philo
 let's use struct time from the MAIN THREAD ONLY.
 */
 
-static void	*routine(void *philo_info)
-{
-	t_philo_profile	*p;
-	struct timeval	*time;
-	__int64_t		temp;
-
-	p = (t_philo_profile *)philo_info;
-	time = p->time_adr;
-	pthread_mutex_lock(p->m_time_adr);
-	gettimeofday(time, NULL);
-	p->r_eat = *time;
-	pthread_mutex_unlock(p->m_time_adr);
-	while (is_termination(p))
-	{
-		pthread_mutex_unlock(p->m_t_flag_adr);
-		if (!(p->m_fork_slot[1])) // 1명일 때.
-		{
-			usleep(p->die_time * 1000);
-			gettimeofday(time, NULL);
-			temp = (time->tv_sec - p->time_init_val) * 1000 + time->tv_usec / 1000;
-			printf("%ld 1 died\n", temp);
-			break ;
-		}
-		pthread_mutex_lock(p->m_time_adr);
-		gettimeofday(time, NULL);
-		temp = (time->tv_sec - p->time_init_val) * 1000 + time->tv_usec / 1000;
-		pthread_mutex_unlock(p->m_time_adr);
-		// dead lock!
-		pthread_mutex_lock(p->m_fork_slot[0]);
-		printf("%lu %i has taken a fork.\n", temp, p->idx);
-		pthread_mutex_lock(p->m_fork_slot[1]);
-		printf("%lu %i has taken a fork.\n", temp, p->idx);
-		if (grab_eat_sleep(p, time))
-			break ;
-	}
-	pthread_mutex_unlock(p->m_t_flag_adr);
-	return (0);
-}
-
 static int	get_threads(t_philo_args args, t_philo_profile *profile)
 {
 	int	i;
@@ -76,6 +37,11 @@ static int	get_threads(t_philo_args args, t_philo_profile *profile)
 	}
 	return (0);
 }
+
+/*
+다수의 철학자(200 근접)일 때 사망 후 데드락 걸리는 현상
+다수의 철학자 일 때 너무 빨리 죽어버림 -> 식사 순서를 정해야 한다
+*/
 
 int	main(int argc, char **argv)
 {

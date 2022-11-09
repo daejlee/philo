@@ -11,12 +11,19 @@ static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
 		pthread_mutex_destroy(&manager->m_time);
 		return (1);
 	}
+	if (pthread_mutex_init(&manager->m_fork_stat, NULL))
+	{
+		pthread_mutex_destroy(&manager->m_time);
+		pthread_mutex_destroy(&manager->m_t_flag);
+		return (1);
+	}
 	if (args.eat_max != -1)
 	{
 		if (pthread_mutex_init(&manager->m_eat_max, NULL))
 		{
 			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
+			pthread_mutex_destroy(&manager->m_fork_stat);
 			return (1);
 		}
 	}
