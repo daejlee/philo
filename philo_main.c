@@ -39,8 +39,8 @@ static int	get_threads(t_philo_args args, t_philo_profile *profile)
 }
 
 /*
-다수의 철학자(200 근접)일 때 사망 후 데드락 걸리는 현상
-다수의 철학자 일 때 너무 빨리 죽어버림 -> 식사 순서를 정해야 한다
+다수의 철학자(200 근접)일 때 사망 후 데드락 걸리는 현상 -> 2. 해결.
+다수의 철학자 일 때 너무 빨리 죽어버림 -> 식사 순서를 정해야 한다 -> 1.
 */
 
 int	main(int argc, char **argv)
