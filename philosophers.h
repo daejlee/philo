@@ -18,6 +18,8 @@
 // 사용하는 뮤텍스		-> m_t_flag, m_eat_max, fork_arr
 
 // 헤더 변수들 정리..
+typedef struct s_philo_manager	t_philo_manager;
+
 typedef struct s_philo_profile
 {
 	int				idx;
@@ -27,6 +29,7 @@ typedef struct s_philo_profile
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
+	int				cnt_eat;
 	__int64_t		time_init_val;
 	struct timeval	*time_adr;
 	pthread_mutex_t	*m_time_adr;
@@ -38,10 +41,12 @@ typedef struct s_philo_profile
 	pthread_mutex_t	*m_fork_stat;
 	pthread_mutex_t	*m_fork_slot[2];
 	pthread_t		thr;
+	t_philo_manager	*manager_adr;
 }	t_philo_profile;
 
 typedef struct s_philo_manager
 {
+	int				philo_num;
 	t_philo_profile	*profile;
 	struct timeval	time;
 	pthread_mutex_t	m_time;

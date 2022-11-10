@@ -19,6 +19,7 @@ static void	init_profile_seg(t_philo_profile *p, t_philo_manager *manager, t_phi
 	p->die_time = args->die_time;
 	p->eat_time = args->eat_time;
 	p->sleep_time = args->sleep_time;
+	p->cnt_eat = 0;
 	p->time_init_val = manager->time.tv_sec * 1000 + manager->time.tv_usec / 1000;
 	p->time_adr = &manager->time;
 	if (args->eat_max != -1)
@@ -49,6 +50,8 @@ static void	init_profile_seg(t_philo_profile *p, t_philo_manager *manager, t_phi
 	p->m_eat_max_adr = &manager->m_eat_max;
 	p->m_fork_stat = &manager->m_fork_stat;
 	p->m_t_flag_adr = &manager->m_t_flag;
+
+	p->manager_adr = manager;
 }
 
 void	init_profile(t_philo_manager *manager, t_philo_args *args)
@@ -90,6 +93,7 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 {
 	int	i;
 
+	manager->philo_num = args.philo_num;
 	manager->t_flag = 0;
 	manager->eat_max = args.eat_max;
 	manager->profile = (t_philo_profile *)malloc(sizeof(t_philo_profile)
