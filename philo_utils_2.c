@@ -91,7 +91,6 @@ void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 	free (manager->must_eat_flags);
 }
 
-
 int	init_manager(t_philo_manager *manager, t_philo_args args)
 {
 	int	i;

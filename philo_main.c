@@ -38,14 +38,6 @@ static int	get_threads(t_philo_args args, t_philo_profile *profile)
 	return (0);
 }
 
-/*
-다수의 철학자 일 때 너무 빨리 죽어버림 -> 식사 순서를 정해야 한다. -> 짝수의 경우는 괜찮음.
-1, 3 / 2, 4 / 5 의 순서로 3번 먹어야 함 -> 구현 해야 함.
-./philo 2 400 200 200 이 가능케..
-Philosophers don’t know if another philosopher is about to die.
-Philosophers don’t speak with each other.
-*/
-
 int	main(int argc, char **argv)
 {
 	t_philo_args	args;
