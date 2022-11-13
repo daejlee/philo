@@ -17,9 +17,9 @@ static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
 		pthread_mutex_destroy(&manager->m_t_flag);
 		return (1);
 	}
-	if (args.eat_max != -1)
+	if (args.must_eat != -1)
 	{
-		if (pthread_mutex_init(&manager->m_eat_max, NULL))
+		if (pthread_mutex_init(&manager->m_must_eat_flags, NULL))
 		{
 			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
@@ -32,8 +32,8 @@ static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
 	{
 		pthread_mutex_destroy(&manager->m_time);
 		pthread_mutex_destroy(&manager->m_t_flag);
-		if (args.eat_max != -1)
-			pthread_mutex_destroy(&manager->m_eat_max);
+		if (args.must_eat != -1)
+			pthread_mutex_destroy(&manager->m_must_eat_flags);
 		return (1);
 	}
 	return (0);
@@ -50,8 +50,8 @@ static int	init_mtx_seg_b(t_philo_manager *manager, t_philo_args args, int i)
 		free(manager->m_fork);
 		pthread_mutex_destroy(&manager->m_time);
 		pthread_mutex_destroy(&manager->m_t_flag);
-		if (args.eat_max != -1)
-			pthread_mutex_destroy(&manager->m_eat_max);
+		if (args.must_eat != -1)
+			pthread_mutex_destroy(&manager->m_must_eat_flags);
 		return (1);
 	}
 	return (0);
@@ -78,8 +78,8 @@ int	init_mtx(t_philo_manager *manager, t_philo_args args)
 			free(manager->m_fork);
 			pthread_mutex_destroy(&manager->m_time);
 			pthread_mutex_destroy(&manager->m_t_flag);
-			if (args.eat_max != -1)
-				pthread_mutex_destroy(&manager->m_eat_max);
+			if (args.must_eat != -1)
+				pthread_mutex_destroy(&manager->m_must_eat_flags);
 			return (1);
 		}
 		i++;

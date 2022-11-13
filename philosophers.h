@@ -17,7 +17,7 @@
 // 사용하는 공유자원	-> int t_flag, int eat_max
 // 사용하는 뮤텍스		-> m_t_flag, m_eat_max, fork_arr
 
-// 헤더 변수들 정리..
+// 헤더 변수들 정리.. must_eat으로 통일!
 typedef struct s_philo_manager	t_philo_manager;
 
 typedef struct s_philo_profile
@@ -29,12 +29,13 @@ typedef struct s_philo_profile
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
-	int				cnt_eat;
+	int				eat_cnt;
+	int				must_eat;
 	__int64_t		time_init_val;
 	struct timeval	*time_adr;
 	pthread_mutex_t	*m_time_adr;
-	int				*eat_max_adr;
-	pthread_mutex_t	*m_eat_max_adr;
+	int				*must_eat_flag;
+	pthread_mutex_t	*m_must_eat_flag;
 	int				*t_flag_adr;
 	pthread_mutex_t	*m_t_flag_adr;
 	int				*fork_stat[2];
@@ -52,8 +53,8 @@ typedef struct s_philo_manager
 	pthread_mutex_t	m_time;
 	int				t_flag;
 	pthread_mutex_t	m_t_flag;
-	int				eat_max;
-	pthread_mutex_t	m_eat_max;
+	int				*must_eat_flags;
+	pthread_mutex_t	m_must_eat_flags;
 	int				*fork_stat;
 	pthread_mutex_t	m_fork_stat;
 	pthread_mutex_t	**m_fork;
@@ -65,7 +66,7 @@ typedef struct s_philo_args
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
-	int				eat_max;
+	int				must_eat;
 }	t_philo_args;
 
 int		ft_atoi(const char *nptr);

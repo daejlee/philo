@@ -20,7 +20,7 @@ void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
 	usleep(p->die_time * 1000);
 	gettimeofday(time, NULL);
 	temp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
-	printf("%lu 1 died\n", temp);
+	printf("%llu 1 died\n", temp);
 	return (NULL);
 }
 
@@ -43,6 +43,20 @@ int	unlock_fork(t_philo_profile *p)
 	return (1);
 }
 
+int	is_flags_all_up(int *must_eat_flags, int philo_num)
+{
+	int	i;
+	
+	i = 0;
+	while (i < philo_num)
+	{
+		if (!must_eat_flags[i])
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	is_termination(t_philo_profile *p)
 {
 	__int64_t		temp;
@@ -55,17 +69,17 @@ int	is_termination(t_philo_profile *p)
 		return (0);
 	}
 	
-	if (p->eat_max_adr)
+	if (p->must_eat_flag)
 	{
-		pthread_mutex_lock(p->m_eat_max_adr);
-		if (!*(p->eat_max_adr))
+		pthread_mutex_lock(p->m_must_eat_flag);
+		if (!is_flags_all_up(p->manager_adr->must_eat_flags, p->manager_adr->philo_num))
 		{
 			*(p->t_flag_adr) = 1;
 			pthread_mutex_unlock(p->m_t_flag_adr);
-			pthread_mutex_unlock(p->m_eat_max_adr);
+			pthread_mutex_unlock(p->m_must_eat_flag);
 			return (0);
 		}
-		pthread_mutex_unlock(p->m_eat_max_adr);
+		pthread_mutex_unlock(p->m_must_eat_flag);
 	}
 
 	gettimeofday(&time_now, NULL);
@@ -74,7 +88,7 @@ int	is_termination(t_philo_profile *p)
 	{
 		*(p->t_flag_adr) = 1;
 		temp = time_now.tv_sec * 1000 + time_now.tv_usec / 1000 - p->time_init_val;
-		printf("%lu %i died\n", temp, p->idx);
+		printf("%llu %i died\n", temp, p->idx);
 		pthread_mutex_unlock(p->m_t_flag_adr);
 		return (0);
 	}
@@ -86,10 +100,6 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	__int64_t	temp;
 	int			think_time;
 
-	if (p->manager_adr->philo_num % 2)
-		think_time = (p->eat_time * 2 - p->sleep_time) * 1000;
-	else
-		think_time = 100;
 	pthread_mutex_lock(p->m_time_adr);
 	gettimeofday(time, NULL);
 	p->r_sleep = *time;
@@ -97,7 +107,7 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	pthread_mutex_unlock(p->m_time_adr);
 	if (!is_termination(p))
 		return (1);
-	printf("%lu %i is sleeping\n", temp, p->idx);
+	printf("%llu %i is sleeping\n", temp, p->idx);
 	pthread_mutex_unlock(p->m_t_flag_adr);
 	if (p->eat_time + p->sleep_time > p->die_time)
 	{
@@ -112,8 +122,12 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	pthread_mutex_unlock(p->m_time_adr);
 	if (!is_termination(p))
 		return (1);
-	printf("%lu %i is thinking\n", temp, p->idx);
+	printf("%llu %i is thinking\n", temp, p->idx);
 	pthread_mutex_unlock(p->m_t_flag_adr);
+	if (p->manager_adr->philo_num % 2)
+		think_time = (p->eat_time * 2 - p->sleep_time) * 1000;
+	else
+		think_time = 100;
 	usleep(think_time);
 	return (0);
 }
@@ -132,8 +146,14 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 
 	if (!is_termination(p))
 		return (unlock_fork(p));
-	p->cnt_eat++;
-	printf("%lu %i is eating\n", temp, p->idx);
+	printf("%llu %i is eating\n", temp, p->idx);
+	p->eat_cnt++;
+	if (p->eat_cnt == p->must_eat)
+	{
+		pthread_mutex_lock(p->m_must_eat_flag);
+		*p->must_eat_flag = 1;
+		pthread_mutex_unlock(p->m_must_eat_flag);
+	}
 	pthread_mutex_unlock(p->m_t_flag_adr);
 
 	if (p->eat_time >= p->die_time)
@@ -145,6 +165,11 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 	unlock_fork(p);
 	return (gne_sleep(p, time));
 }
+
+/*
+must_eat int arr -> use of flag slots.
+check whole slots in is_termination.
+*/
 
 void	*routine(void *philo_info)
 {
@@ -205,9 +230,9 @@ void	*routine(void *philo_info)
 			temp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
 			pthread_mutex_unlock(p->m_time_adr);
 			pthread_mutex_lock(p->m_fork_slot[0]);
-			printf("%lu %i has taken a fork.\n", temp, p->idx);
+			printf("%llu %i has taken a fork.\n", temp, p->idx);
 			pthread_mutex_lock(p->m_fork_slot[1]);
-			printf("%lu %i has taken a fork.\n", temp, p->idx);
+			printf("%llu %i has taken a fork.\n", temp, p->idx);
 			//	printf("%i returning..\n", p->idx);
 			pthread_mutex_unlock(p->m_t_flag_adr);
 
