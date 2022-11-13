@@ -23,6 +23,11 @@ let's use one struct time per one philo
 let's use struct time from the MAIN THREAD ONLY.
 */
 
+void	leaks(void)
+{
+	system("leaks philo");
+}
+
 static int	get_threads(t_philo_args args, t_philo_profile *profile)
 {
 	int	i;
@@ -42,6 +47,8 @@ int	main(int argc, char **argv)
 {
 	t_philo_args	args;
 	t_philo_manager	manager;
+
+	//atexit(leaks);
 
 	gettimeofday(&manager.time, NULL);
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))

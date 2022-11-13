@@ -121,9 +121,10 @@ int	is_termination(t_philo_profile *p)
 		}
 		pthread_mutex_unlock(p->m_must_eat_flag);
 	}
-
+	
 	get_time(p, p->time_adr, NULL, &time_stamp);
-	if (time_stamp > (__uint64_t)(p->die_time + p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
+	
+	if (time_stamp + p->time_init_val > (__uint64_t)(p->die_time + p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
 	{
 		*(p->t_flag_adr) = 1;
 		printf("%llu %i died\n", time_stamp, p->idx);

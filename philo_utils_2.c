@@ -86,6 +86,7 @@ void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 	{
 		free(manager->m_fork[i++]);
 	}
+	free (manager->fork_stat);
 	free (manager->m_fork);
 	free (manager->profile);
 	free (manager->must_eat_flags);
