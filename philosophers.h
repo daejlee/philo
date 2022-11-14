@@ -27,7 +27,7 @@ typedef struct s_philo_profile
 	int				sleep_time;
 	int				eat_cnt;
 	int				must_eat;
-	__int64_t		time_init_val;
+	__uint64_t		time_init_val;
 	struct timeval	*time_adr;
 	pthread_mutex_t	*m_time_adr;
 	int				*must_eat_flag;

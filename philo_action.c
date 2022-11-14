@@ -17,7 +17,7 @@ static void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
 {
 	__uint64_t	time_stamp;
 
-	usleep_check(p, time, p->die_time * 1000);
+	usleep_check(p, time, p->die_time);
 	gettimeofday(time, NULL);
 	time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
 	printf("%lu 1 died\n", time_stamp);
@@ -119,9 +119,9 @@ void	*routine(void *philo_info)
 
 	p = (t_philo_profile *)philo_info;
 	time = p->time_adr;
-	get_time(p, time, &p->r_eat, &time_stamp);
 	if (!(p->m_fork_slot[1]))
 		return (kill_single_philo(p, time));
+	get_time(p, time, &p->r_eat, &time_stamp);
 	if (p->manager_adr->philo_num % 2)
 	{
 		if (p->idx == p->manager_adr->philo_num)

@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers_bonus.h"
-#include <unistd.h>
 
 static const char	*blank_check(const char *nptr)
 {
@@ -65,12 +64,12 @@ int	prep_args(t_philo_args *p, char **argv)
 	p->eat_time = ft_atoi(argv[3]);
 	p->sleep_time = ft_atoi(argv[4]);
 	if (argv[5])
-		p->must_eat_times = ft_atoi(argv[5]);
+		p->must_eat = ft_atoi(argv[5]);
 	else
-		p->must_eat_times = -1;
+		p->must_eat = -1;
 	if (p->philo_num < 1 || p->die_time < 1
 		|| p->eat_time < 1 || p->sleep_time < 1
-		|| p->must_eat_times < -1)
+		|| p->must_eat < -1)
 		return (1);
 	return (0);
 }

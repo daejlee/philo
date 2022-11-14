@@ -14,46 +14,53 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <semaphore.h>
-# include <stdlib.h>
 
 typedef struct s_philo_profile
 {
 	int				idx;
-	__uint64_t		r_eat;
-	__uint64_t		r_sleep;
-	__uint64_t		r_think;
+	struct timeval	r_eat;
+	struct timeval	r_sleep;
+	struct timeval	r_think;
 	int				die_time;
 	int				eat_time;
 	int				sleep_time;
-	sem_t			*t_sem;
+	int				eat_cnt;
 }	t_philo_profile;
 
 typedef struct s_philo_args
 {
-	int				philo_num;
-	int				die_time;
-	int				eat_time;
-	int				sleep_time;
-	int				must_eat_times;
+	int	philo_num;
+	int	die_time;
+	int	eat_time;
+	int	sleep_time;
+	int	must_eat;
 }	t_philo_args;
 
 typedef struct s_philo_manager
 {
-	int				philo_num;
-	int				must_eat_times;
+	t_philo_args	args;
 	pid_t			*pid_arr;
-	sem_t			*f_sem;
-	sem_t			*m_sem;
-	sem_t			*t_sem;
+	sem_t			*fork_sem;
+	sem_t			*must_eat_sem;
+	sem_t			*termination_sem;
+	__uint64_t		time_init_val;
+	struct timeval	time;
+	sem_t			*time_sem;
 }	t_philo_manager;
+
+
 
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
-void	is_termination(t_philo_profile *profile, struct timeval *time);
-int		grab_eat_sleep(t_philo_profile *p,
-			struct timeval *time, t_philo_manager *manager);
-void	init_profile(t_philo_profile *profile, t_philo_args args, sem_t *t_sem);
-int		init_manager(t_philo_manager *manager, t_philo_args args);
+
+int		kill_all(pid_t *pid_arr, int philo_num);
 int		free_mem(t_philo_manager *manager);
+void	init_profile(t_philo_profile *profile, t_philo_args args);
+int		init_manager(t_philo_manager *manager, t_philo_args args);
+
+void	routine(t_philo_manager *manager, t_philo_profile *p);
+void	usleep_check(t_philo_manager *manager, int targ_time);
+void	get_time(t_philo_manager *manager, struct timeval *dest, __uint64_t *time_stamp);
+void	is_termination(t_philo_profile *profile, t_philo_manager *manager);
 
 #endif
