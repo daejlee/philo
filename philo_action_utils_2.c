@@ -1,6 +1,5 @@
 #include "philosophers.h"
 #include <stdio.h>
-#include <unistd.h>
 
 int	is_flags_all_up(int *must_eat_flags, int philo_num)
 {

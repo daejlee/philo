@@ -13,20 +13,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-/*
-다수의 철학자 일 때 너무 빨리 죽어버림 -> 식사 순서를 정해야 한다. -> 짝수의 경우는 괜찮음.
-1, 3 / 2, 4 / 5 의 순서로 3번 먹어야 함 -> 구현 해야 함.
-	./philo 5 800 200 300일 때
-	A	eat[0~200]		sleep[200~500]		think[500~600]		eat[600~800]		sleep[800~1100]
-	B	think[0~200]	eat[200~400]		sleep[400~700]		think[700~800]		eat[800~1000]
-	C	think[0~200]	think[200~400]		eat[400~600]		sleep[600~900]		think[900~1000]
-	./philo 5 800 300 200일 때
-	A	eat[0~300]		sleep[300~500]		think[500~900]		eat[600~800]		sleep[800~1100]
-	B	think[0~300]	eat[300~600]		sleep[600~800]		think[700~800]		eat[800~1000]
-	C	think[0~300]	think[300~600]		eat[600~900]		sleep[600~900]		think[900~1000]
-	eat_time * 3 - (eat_time + sleep_time)
-*/
-
 static void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
 {
 	__uint64_t	time_stamp;

@@ -77,7 +77,8 @@ int		init_mtx(t_philo_manager *manager, t_philo_args args);
 void	*routine(void *philo_info);
 int		is_fork_available(t_philo_profile *p);
 int		unlock_fork(t_philo_profile *p);
-void	get_time(t_philo_profile *p, struct timeval *time, struct timeval *dest, __uint64_t *time_stamp);
+void	get_time(t_philo_profile *p, struct timeval *time,
+			struct timeval *dest, __uint64_t *time_stamp);
 void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time);
 int		is_flags_all_up(int *must_eat_flags, int philo_num);
 

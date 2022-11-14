@@ -21,7 +21,8 @@ int	unlock_fork(t_philo_profile *p)
 	return (1);
 }
 
-void	get_time(t_philo_profile *p, struct timeval *time, struct timeval *dest, __uint64_t *time_stamp)
+void	get_time(t_philo_profile *p, struct timeval *time,
+		struct timeval *dest, __uint64_t *time_stamp)
 {
 	pthread_mutex_lock(p->m_time_adr);
 	gettimeofday(time, NULL);

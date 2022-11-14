@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #include "philosophers.h"
 #include <stdlib.h>
-#include <unistd.h>
 
 void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
 {
