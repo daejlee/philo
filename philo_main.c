@@ -48,14 +48,12 @@ int	main(int argc, char **argv)
 	t_philo_args	args;
 	t_philo_manager	manager;
 
-	//atexit(leaks);
-
-	gettimeofday(&manager.time, NULL);
 	if ((argc != 5 && argc != 6) || prep_args(&args, argv))
 	{
 		printf("invalid args\n");
 		return (0);
 	}
+	gettimeofday(&manager.time, NULL);
 	if (init_mtx(&manager, args))
 		return (1);
 	if (init_manager(&manager, args))

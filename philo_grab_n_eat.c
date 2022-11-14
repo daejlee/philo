@@ -61,7 +61,7 @@ void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
 	usleep_check(p, time, p->die_time * 1000);
 	gettimeofday(time, NULL);
 	temp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
-	printf("%llu 1 died\n", temp);
+	printf("%lu 1 died\n", temp);
 	return (NULL);
 }
 
@@ -127,7 +127,7 @@ int	is_termination(t_philo_profile *p)
 	if (time_stamp + p->time_init_val > (__uint64_t)(p->die_time + p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
 	{
 		*(p->t_flag_adr) = 1;
-		printf("%llu %i died\n", time_stamp, p->idx);
+		printf("%lu %i died\n", time_stamp, p->idx);
 		pthread_mutex_unlock(p->m_t_flag_adr);
 		return (0);
 	}
@@ -142,7 +142,7 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	get_time(p, time, &p->r_sleep, &time_stamp);
 	if (!is_termination(p))
 		return (1);
-	printf("%llu %i is sleeping\n", time_stamp, p->idx);
+	printf("%lu %i is sleeping\n", time_stamp, p->idx);
 	pthread_mutex_unlock(p->m_t_flag_adr);
 	if (p->eat_time + p->sleep_time > p->die_time)
 	{
@@ -153,7 +153,7 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	get_time(p, time, &p->r_think, &time_stamp);
 	if (!is_termination(p))
 		return (1);
-	printf("%llu %i is thinking\n", time_stamp, p->idx);
+	printf("%lu %i is thinking\n", time_stamp, p->idx);
 	pthread_mutex_unlock(p->m_t_flag_adr);
 	if (p->manager_adr->philo_num % 2)
 		think_time = (p->eat_time * 2 - p->sleep_time);
@@ -173,7 +173,7 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 	get_time(p, time, &p->r_eat, &time_stamp);
 	if (!is_termination(p))
 		return (unlock_fork(p));
-	printf("%llu %i is eating\n", time_stamp, p->idx);
+	printf("%lu %i is eating\n", time_stamp, p->idx);
 	p->eat_cnt++;
 	pthread_mutex_unlock(p->m_t_flag_adr);
 	if (p->eat_cnt == p->must_eat)
@@ -232,9 +232,9 @@ void	*routine(void *philo_info)
 			}
 			get_time(p, time, NULL, &time_stamp);
 			pthread_mutex_lock(p->m_fork_slot[0]);
-			printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+			printf("%lu %i has taken a fork.\n", time_stamp, p->idx);
 			pthread_mutex_lock(p->m_fork_slot[1]);
-			printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+			printf("%lu %i has taken a fork.\n", time_stamp, p->idx);
 			pthread_mutex_unlock(p->m_t_flag_adr);
 			if (grab_eat_sleep(p, time))
 				break ;

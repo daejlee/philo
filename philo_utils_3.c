@@ -1,8 +1,7 @@
 #include "philosophers.h"
 #include <stdlib.h>
-#include <stdio.h> //for printf debugging.
 
-static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
+static int	get_mtx(t_philo_manager *manager, t_philo_args args)
 {
 	if (pthread_mutex_init(&manager->m_time, NULL))
 		return (1);
@@ -27,33 +26,40 @@ static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
 			return (1);
 		}
 	}
-	manager->m_fork = (pthread_mutex_t **)malloc(sizeof (pthread_mutex_t *) * args.philo_num);
-	if (!manager->m_fork)
-	{
-		pthread_mutex_destroy(&manager->m_time);
-		pthread_mutex_destroy(&manager->m_t_flag);
-		if (args.must_eat != -1)
-			pthread_mutex_destroy(&manager->m_must_eat_flags);
-		return (1);
-	}
 	return (0);
+}
+
+static int	purge_mtx(t_philo_manager *manager, t_philo_args args)
+{
+	pthread_mutex_destroy(&manager->m_time);
+	pthread_mutex_destroy(&manager->m_t_flag);
+	pthread_mutex_destroy(&manager->m_fork_stat);
+	if (args.must_eat != -1)
+		pthread_mutex_destroy(&manager->m_must_eat_flags);
+	return (1);
 }
 
 static int	init_mtx_seg_b(t_philo_manager *manager, t_philo_args args, int i)
 {
-	// if we printf the i, then no problen. but if we don't, we get error. -> wtf
 	manager->m_fork[i] = (pthread_mutex_t *)malloc(sizeof (pthread_mutex_t));
 	if (!manager->m_fork[i])
 	{
 		while (i--)
 			free(manager->m_fork[i]);
 		free(manager->m_fork);
-		pthread_mutex_destroy(&manager->m_time);
-		pthread_mutex_destroy(&manager->m_t_flag);
-		if (args.must_eat != -1)
-			pthread_mutex_destroy(&manager->m_must_eat_flags);
-		return (1);
+		return (purge_mtx(manager, args));
 	}
+	return (0);
+}
+
+static int	init_mtx_seg_a(t_philo_manager *manager, t_philo_args args)
+{
+	if (get_mtx(manager, args))
+		return (1);
+	manager->m_fork = (pthread_mutex_t **)malloc(sizeof (pthread_mutex_t *)
+			* args.philo_num);
+	if (!manager->m_fork)
+		return (purge_mtx(manager, args));
 	return (0);
 }
 
@@ -76,11 +82,7 @@ int	init_mtx(t_philo_manager *manager, t_philo_args args)
 				free(manager->m_fork[i]);
 			}
 			free(manager->m_fork);
-			pthread_mutex_destroy(&manager->m_time);
-			pthread_mutex_destroy(&manager->m_t_flag);
-			if (args.must_eat != -1)
-				pthread_mutex_destroy(&manager->m_must_eat_flags);
-			return (1);
+			return (purge_mtx(manager, args));
 		}
 		i++;
 	}
