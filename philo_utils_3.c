@@ -1,6 +1,16 @@
 #include "philosophers.h"
 #include <stdlib.h>
 
+int	purge_mtx(t_philo_manager *manager, t_philo_args args)
+{
+	pthread_mutex_destroy(&manager->m_time);
+	pthread_mutex_destroy(&manager->m_t_flag);
+	pthread_mutex_destroy(&manager->m_fork_stat);
+	if (args.must_eat != -1)
+		pthread_mutex_destroy(&manager->m_must_eat_flags);
+	return (1);
+}
+
 static int	get_mtx(t_philo_manager *manager, t_philo_args args)
 {
 	if (pthread_mutex_init(&manager->m_time, NULL))
@@ -27,16 +37,6 @@ static int	get_mtx(t_philo_manager *manager, t_philo_args args)
 		}
 	}
 	return (0);
-}
-
-static int	purge_mtx(t_philo_manager *manager, t_philo_args args)
-{
-	pthread_mutex_destroy(&manager->m_time);
-	pthread_mutex_destroy(&manager->m_t_flag);
-	pthread_mutex_destroy(&manager->m_fork_stat);
-	if (args.must_eat != -1)
-		pthread_mutex_destroy(&manager->m_must_eat_flags);
-	return (1);
 }
 
 static int	init_mtx_seg_b(t_philo_manager *manager, t_philo_args args, int i)

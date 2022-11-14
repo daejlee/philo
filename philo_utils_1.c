@@ -13,6 +13,26 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args)
+{
+	int	i;
+
+	i = 0;
+	while (i < args.philo_num)
+	{
+		pthread_join(manager->profile[i].thr, NULL);
+		i++;
+	}
+	purge_mtx(manager, args);
+	i = 0;
+	while (i < args.philo_num)
+		free(manager->m_fork[i++]);
+	free(manager->fork_stat);
+	free(manager->m_fork);
+	free(manager->profile);
+	free(manager->must_eat_flags);
+}
+
 static const char	*blank_check(const char *nptr)
 {
 	unsigned int	i;

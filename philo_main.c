@@ -53,11 +53,11 @@ int	main(int argc, char **argv)
 		printf("invalid args\n");
 		return (0);
 	}
-	gettimeofday(&manager.time, NULL);
 	if (init_mtx(&manager, args))
 		return (1);
 	if (init_manager(&manager, args))
 		return (1);
+	gettimeofday(&manager.time, NULL);
 	init_profile(&manager, &args);
 	if (get_threads(args, manager.profile))
 	{
