@@ -36,7 +36,7 @@ static int	get_threads(t_philo_args args, t_philo_profile *profile)
 	while (i < args.philo_num)
 	{
 		if (pthread_create(&(profile[i].thr), NULL,
-			routine, &(profile[i])) < 0)
+				routine, &(profile[i])) < 0)
 			return (1);
 		i++;
 	}

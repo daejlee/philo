@@ -12,7 +12,7 @@
 NAME 		= philo
 CFLAGS 		= -Wall -Wextra -Werror
 CC 			= cc
-SRC 		= philo_main.c philo_utils_1.c philo_utils_2.c philo_utils_3.c philo_grab_n_eat.c
+SRC 		= philo_main.c philo_utils_1.c philo_utils_2.c philo_utils_3.c philo_action.c philo_action_utils_1.c philo_action_utils_2.c
 OBJ 		= $(SRC:.c=.o)
 
 ifdef WITH_BONUS

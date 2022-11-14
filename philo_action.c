@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_grab_n_eat.c                                 :+:      :+:    :+:   */
+/*   philo_action.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: daejlee <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -27,111 +27,15 @@
 	eat_time * 3 - (eat_time + sleep_time)
 */
 
-void	get_time(t_philo_profile *p, struct timeval *time, struct timeval *dest, __uint64_t *time_stamp)
-{
-	pthread_mutex_lock(p->m_time_adr);
-	gettimeofday(time, NULL);
-	if (dest)
-		*dest = *time;
-	*time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
-	pthread_mutex_unlock(p->m_time_adr);
-}
-
-void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time)
+static void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
 {
 	__uint64_t	time_stamp;
-	__uint64_t	r_time;
-
-	if (!targ_time)
-		return ;
-	get_time(p, time, NULL, &r_time);
-	while (1)
-	{
-		usleep(50);
-		get_time(p, time, NULL, &time_stamp);
-		if (time_stamp >= (__uint64_t)(targ_time + r_time))
-			break ;
-	}
-}
-
-void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
-{
-	__int64_t		temp;
 
 	usleep_check(p, time, p->die_time * 1000);
 	gettimeofday(time, NULL);
-	temp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
-	printf("%lu 1 died\n", temp);
+	time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
+	printf("%lu 1 died\n", time_stamp);
 	return (NULL);
-}
-
-int	is_fork_available(t_philo_profile *p)
-{
-	pthread_mutex_lock(p->m_fork_stat);
-	if (*p->fork_stat[0] && *p->fork_stat[1])
-		return (0);
-	return (1);
-}
-
-int	unlock_fork(t_philo_profile *p)
-{
-	pthread_mutex_lock(p->m_fork_stat);
-	*p->fork_stat[0] = 1;
-	*p->fork_stat[1] = 1;
-	pthread_mutex_unlock(p->m_fork_stat);
-	pthread_mutex_unlock(p->m_fork_slot[0]);
-	pthread_mutex_unlock(p->m_fork_slot[1]);
-	return (1);
-}
-
-int	is_flags_all_up(int *must_eat_flags, int philo_num)
-{
-	int	i;
-	
-	i = 0;
-	while (i < philo_num)
-	{
-		if (!must_eat_flags[i])
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-int	is_termination(t_philo_profile *p)
-{
-	__uint64_t		time_stamp;
-
-	pthread_mutex_lock(p->m_t_flag_adr);
-	if (*(p->t_flag_adr))
-	{
-		pthread_mutex_unlock(p->m_t_flag_adr);
-		return (0);
-	}
-	
-	if (p->must_eat_flag)
-	{
-		pthread_mutex_lock(p->m_must_eat_flag);
-		if (!is_flags_all_up(p->manager_adr->must_eat_flags, p->manager_adr->philo_num))
-		{
-			*(p->t_flag_adr) = 1;
-			pthread_mutex_unlock(p->m_t_flag_adr);
-			pthread_mutex_unlock(p->m_must_eat_flag);
-			return (0);
-		}
-		pthread_mutex_unlock(p->m_must_eat_flag);
-	}
-	
-	get_time(p, p->time_adr, NULL, &time_stamp);
-	
-	if (time_stamp + p->time_init_val > (__uint64_t)(p->die_time + p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
-	{
-		*(p->t_flag_adr) = 1;
-		printf("%lu %i died\n", time_stamp, p->idx);
-		pthread_mutex_unlock(p->m_t_flag_adr);
-		return (0);
-	}
-	return (1);
 }
 
 static int	gne_sleep(t_philo_profile *p, struct timeval *time)
@@ -187,10 +91,38 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 		usleep_check(p, time, p->die_time);
 		return (unlock_fork(p));
 	}
-	// usleep의 오차를 줄이자. 반복 호출하며 체크하는 함수가 필요.
 	usleep_check(p, time, p->eat_time);
 	unlock_fork(p);
 	return (gne_sleep(p, time));
+}
+
+int	seg(t_philo_profile *p, struct timeval *time, __uint64_t *time_stamp)
+{
+	if (!is_fork_available(p))
+	{
+		*p->fork_stat[0] = 0;
+		*p->fork_stat[1] = 0;
+		pthread_mutex_unlock(p->m_fork_stat);
+		if (!is_termination(p))
+		{
+			pthread_mutex_lock(p->m_fork_stat);
+			*p->fork_stat[0] = 1;
+			*p->fork_stat[1] = 1;
+			pthread_mutex_unlock(p->m_fork_stat);
+			return (1);
+		}
+		get_time(p, time, NULL, time_stamp);
+		pthread_mutex_lock(p->m_fork_slot[0]);
+		printf("%lu %i has taken a fork.\n", *time_stamp, p->idx);
+		pthread_mutex_lock(p->m_fork_slot[1]);
+		printf("%lu %i has taken a fork.\n", *time_stamp, p->idx);
+		pthread_mutex_unlock(p->m_t_flag_adr);
+		if (grab_eat_sleep(p, time))
+			return (1);
+	}
+	else
+		pthread_mutex_unlock(p->m_fork_stat);
+	return (0);
 }
 
 void	*routine(void *philo_info)
@@ -202,7 +134,6 @@ void	*routine(void *philo_info)
 	p = (t_philo_profile *)philo_info;
 	time = p->time_adr;
 	get_time(p, time, &p->r_eat, &time_stamp);
-
 	if (!(p->m_fork_slot[1]))
 		return (kill_single_philo(p, time));
 	if (p->manager_adr->philo_num % 2)
@@ -217,30 +148,8 @@ void	*routine(void *philo_info)
 	while (is_termination(p))
 	{
 		pthread_mutex_unlock(p->m_t_flag_adr);
-		if (!is_fork_available(p))
-		{
-			*p->fork_stat[0] = 0;
-			*p->fork_stat[1] = 0;
-			pthread_mutex_unlock(p->m_fork_stat);
-			if (!is_termination(p))
-			{
-				pthread_mutex_lock(p->m_fork_stat);
-				*p->fork_stat[0] = 1;
-				*p->fork_stat[1] = 1;
-				pthread_mutex_unlock(p->m_fork_stat);
-				return (0);
-			}
-			get_time(p, time, NULL, &time_stamp);
-			pthread_mutex_lock(p->m_fork_slot[0]);
-			printf("%lu %i has taken a fork.\n", time_stamp, p->idx);
-			pthread_mutex_lock(p->m_fork_slot[1]);
-			printf("%lu %i has taken a fork.\n", time_stamp, p->idx);
-			pthread_mutex_unlock(p->m_t_flag_adr);
-			if (grab_eat_sleep(p, time))
-				break ;
-		}
-		else
-			pthread_mutex_unlock(p->m_fork_stat);
+		if (seg(p, time, &time_stamp))
+			return (0);
 	}
 	return (0);
 }

@@ -14,10 +14,6 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-// 사용하는 공유자원	-> int t_flag, int eat_max
-// 사용하는 뮤텍스		-> m_t_flag, m_eat_max, fork_arr
-
-// 헤더 변수들 정리.. must_eat으로 통일!
 typedef struct s_philo_manager	t_philo_manager;
 
 typedef struct s_philo_profile
@@ -79,5 +75,10 @@ int		purge_mtx(t_philo_manager *manager, t_philo_args args);
 void	recover_thr_free_mem(t_philo_manager *manager, t_philo_args args);
 int		init_mtx(t_philo_manager *manager, t_philo_args args);
 void	*routine(void *philo_info);
+int		is_fork_available(t_philo_profile *p);
+int		unlock_fork(t_philo_profile *p);
+void	get_time(t_philo_profile *p, struct timeval *time, struct timeval *dest, __uint64_t *time_stamp);
+void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time);
+int		is_flags_all_up(int *must_eat_flags, int philo_num);
 
 #endif
