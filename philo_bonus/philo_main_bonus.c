@@ -19,9 +19,14 @@ static int	check_must_eat_sem(t_philo_manager *manager)
 {
 	int	i;
 
-	i = manager->args.must_eat * manager->args.philo_num;
+	i = manager->args.philo_num;
+	sem_wait(manager->print_sem);
 	while (i--)
+	{
+		sem_post(manager->print_sem);
 		sem_wait(manager->must_eat_sem);
+		sem_wait(manager->print_sem);
+	}
 	return (0);
 }
 
@@ -60,6 +65,7 @@ int	main(int argc, char **argv)
 	if (init_manager(&manager, args))
 		return (1);
 	init_profile(&p, args);
+	p.manager_adr = &manager;
 	if (get_pcs(&manager, args, &p))
 		return (free_mem(&manager));
 	if (manager.must_eat_sem)

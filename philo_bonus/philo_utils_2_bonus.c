@@ -30,6 +30,10 @@
 # define SEM_TIME "/mysem_time"
 #endif
 
+#ifndef SEM_PRINT
+# define SEM_PRINT "/mysem_print"
+#endif
+
 int	kill_all(pid_t *pid_arr, int philo_num)
 {
 	int	i;
@@ -45,6 +49,7 @@ int	free_mem(t_philo_manager *manager)
 	sem_close(manager->fork_sem);
 	sem_close(manager->termination_sem);
 	sem_close(manager->time_sem);
+	sem_close(manager->print_sem);
 	if (manager->must_eat_sem)
 		sem_close(manager->must_eat_sem);
 	free(manager->pid_arr);
@@ -78,6 +83,14 @@ static int	get_sem(t_philo_manager *manager)
 		sem_close(manager->termination_sem);
 		return (1);
 	}
+	manager->print_sem = sem_open(SEM_PRINT, O_CREAT, 0644, 1);
+	if (manager->print_sem == SEM_FAILED)
+	{
+		sem_close(manager->fork_sem);
+		sem_close(manager->termination_sem);
+		sem_close(manager->time_sem);
+		return (1);
+	}
 	if (manager->args.must_eat == -1)
 		manager->must_eat_sem = NULL;
 	else
@@ -88,6 +101,7 @@ static int	get_sem(t_philo_manager *manager)
 			sem_close(manager->fork_sem);
 			sem_close(manager->termination_sem);
 			sem_close(manager->time_sem);
+			sem_close(manager->print_sem);
 			return (1);
 		}
 	}
@@ -100,6 +114,7 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 	sem_unlink(SEM_TERMINATE);
 	sem_unlink(SEM_MUST_EAT);
 	sem_unlink(SEM_TIME);
+	sem_unlink(SEM_PRINT);
 	manager->args = args;
 	if (get_sem(manager))
 		return (1);
@@ -109,6 +124,7 @@ int	init_manager(t_philo_manager *manager, t_philo_args args)
 		sem_close(manager->fork_sem);
 		sem_close(manager->termination_sem);
 		sem_close(manager->time_sem);
+		sem_close(manager->print_sem);
 		if (manager->must_eat_sem)
 			sem_close(manager->must_eat_sem);
 		return (1);

@@ -15,6 +15,8 @@
 # include <sys/time.h>
 # include <semaphore.h>
 
+typedef struct s_philo_manager	t_philo_manager;
+
 typedef struct s_philo_profile
 {
 	int				idx;
@@ -25,6 +27,7 @@ typedef struct s_philo_profile
 	int				eat_time;
 	int				sleep_time;
 	int				eat_cnt;
+	t_philo_manager	*manager_adr;
 }	t_philo_profile;
 
 typedef struct s_philo_args
@@ -46,6 +49,7 @@ typedef struct s_philo_manager
 	__uint64_t		time_init_val;
 	struct timeval	time;
 	sem_t			*time_sem;
+	sem_t			*print_sem;
 }	t_philo_manager;
 
 
