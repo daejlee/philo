@@ -26,19 +26,16 @@ static int	gne_sleep(t_philo_profile *p, t_philo_manager *manager)
 	get_time(manager, &p->r_sleep, &time_stamp);
 	printf("%llu %i is sleeping\n", time_stamp, p->idx);
 	sem_post(manager->print_sem);
-
 	if (p->eat_time + p->sleep_time >= p->die_time)
 	{
 		usleep_check(manager, p->die_time - p->eat_time);
 		return (1);
 	}
 	usleep_check(manager, p->sleep_time);
-
 	sem_wait(manager->print_sem);
 	get_time(manager, &p->r_think, &time_stamp);
 	printf("%llu %i is thinking\n", time_stamp, p->idx);
 	sem_post(manager->print_sem);
-
 	if (manager->args.philo_num % 2)
 		think_time = (p->eat_time * 2 - p->sleep_time);
 	else
@@ -87,7 +84,7 @@ void	routine(t_philo_manager *manager, t_philo_profile *p)
 	if (manager->args.philo_num == 1)
 		kill_single_philo(p, manager);
 
-	if (pthread_create(&id, NULL, thr_routine, p) < 0) //thread for monitoring temi.
+	if (pthread_create(&id, NULL, thr_routine, p) < 0)
 		exit(0);
 	get_time(manager, &p->r_eat, NULL);
 	if (manager->args.philo_num % 2)
@@ -120,5 +117,4 @@ void	routine(t_philo_manager *manager, t_philo_profile *p)
 				sem_post(manager->fork_sem);
 		}
 	}
-	pthread_join(id, NULL);
 }

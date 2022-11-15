@@ -24,7 +24,7 @@ static int	check_death(t_philo_profile *p)
 		+ p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
 	{
 		*(p->t_flag_adr) = 1;
-		printf("%lu %i died\n", time_stamp, p->idx);
+		printf("%llu %i died\n", time_stamp, p->idx);
 		pthread_mutex_unlock(p->m_t_flag_adr);
 		return (0);
 	}

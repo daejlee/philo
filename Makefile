@@ -26,7 +26,7 @@ endif
 all : $(NAME)
 
 $(NAME) : $(OBJ_FILES)
-	$(CC) -pthread -g $(CFLAGS) -o $(NAME) $(SRC)
+	$(CC) -pthread $(CFLAGS) -o $(NAME) $(SRC)
 
 $(OBJ_FILES) : $(SRC_FILES)
 	$(CC) $(CFLAGS) -c $(SRC_FILES)
