@@ -52,8 +52,6 @@ typedef struct s_philo_manager
 	sem_t			*print_sem;
 }	t_philo_manager;
 
-
-
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
 
@@ -64,7 +62,8 @@ int		init_manager(t_philo_manager *manager, t_philo_args args);
 
 void	routine(t_philo_manager *manager, t_philo_profile *p);
 void	usleep_check(t_philo_manager *manager, int targ_time);
-void	get_time(t_philo_manager *manager, struct timeval *dest, __uint64_t *time_stamp);
+void	get_time(t_philo_manager *manager, struct timeval *dest,
+			__uint64_t *time_stamp);
 void	is_termination(t_philo_profile *profile, t_philo_manager *manager);
 
 #endif

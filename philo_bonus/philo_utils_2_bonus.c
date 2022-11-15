@@ -65,11 +65,8 @@ void	init_profile(t_philo_profile *profile, t_philo_args args)
 	profile->eat_cnt = 0;
 }
 
-static int	get_sem(t_philo_manager *manager)
+static int	get_sem_seg(t_philo_manager *manager)
 {
-	manager->fork_sem = sem_open(SEM_FORK, O_CREAT, 0644, manager->args.philo_num);
-	if (manager->fork_sem == SEM_FAILED)
-		return (1);
 	manager->termination_sem = sem_open(SEM_TERMINATE, O_CREAT, 0644, 1);
 	if (manager->termination_sem == SEM_FAILED)
 	{
@@ -91,6 +88,17 @@ static int	get_sem(t_philo_manager *manager)
 		sem_close(manager->time_sem);
 		return (1);
 	}
+	return (0);
+}
+
+static int	get_sem(t_philo_manager *manager)
+{
+	manager->fork_sem = sem_open(SEM_FORK, O_CREAT,
+			0644, manager->args.philo_num);
+	if (manager->fork_sem == SEM_FAILED)
+		return (1);
+	if (get_sem_seg(manager))
+		return (1);
 	if (manager->args.must_eat == -1)
 		manager->must_eat_sem = NULL;
 	else

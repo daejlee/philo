@@ -31,7 +31,8 @@ void	usleep_check(t_philo_manager *manager, int targ_time)
 	}
 }
 
-void	get_time(t_philo_manager *manager, struct timeval *dest, __uint64_t *time_stamp)
+void	get_time(t_philo_manager *manager, struct timeval *dest,
+		__uint64_t *time_stamp)
 {
 	struct timeval	*time;
 
@@ -41,14 +42,15 @@ void	get_time(t_philo_manager *manager, struct timeval *dest, __uint64_t *time_s
 	if (dest)
 		*dest = *time;
 	if (time_stamp)
-		*time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - manager->time_init_val;
+		*time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000
+			- manager->time_init_val;
 	sem_post(manager->time_sem);
 }
 
 static void	check_death(t_philo_profile *p, t_philo_manager *manager)
 {
 	__uint64_t		time_stamp;
-	
+
 	get_time(manager, NULL, &time_stamp);
 	if (time_stamp + manager->time_init_val > (__uint64_t)(p->die_time
 		+ p->r_eat.tv_sec * 1000 + p->r_eat.tv_usec / 1000))
@@ -62,11 +64,9 @@ void	is_termination(t_philo_profile *p, t_philo_manager *manager)
 {
 	sem_wait(manager->termination_sem);
 	sem_post(manager->termination_sem);
-
 	sem_wait(manager->termination_sem);
 	sem_wait(manager->print_sem);
 	check_death(p, manager);
 	sem_post(manager->print_sem);
 	sem_post(manager->termination_sem);
 }
-
