@@ -56,15 +56,6 @@ int	free_mem(t_philo_manager *manager)
 	return (1);
 }
 
-void	init_profile(t_philo_profile *profile, t_philo_args args)
-{
-	profile->idx = 0;
-	profile->die_time = args.die_time;
-	profile->eat_time = args.eat_time;
-	profile->sleep_time = args.sleep_time;
-	profile->eat_cnt = 0;
-}
-
 static int	get_sem_seg(t_philo_manager *manager)
 {
 	manager->termination_sem = sem_open(SEM_TERMINATE, O_CREAT, 0644, 1);

@@ -14,6 +14,20 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+void	*kill_single_philo(t_philo_profile *p, t_philo_manager *manager)
+{
+	__uint64_t		time_stamp;
+	struct timeval	*time;
+
+	time = &manager->time;
+	usleep_check(manager, p->die_time);
+	gettimeofday(time, NULL);
+	time_stamp = time->tv_sec * 1000
+		+ time->tv_usec / 1000 - manager->time_init_val;
+	printf("%llu 1 died\n", time_stamp);
+	exit(0);
+}
+
 void	usleep_check(t_philo_manager *manager, int targ_time)
 {
 	__uint64_t	time_stamp;

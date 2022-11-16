@@ -1,22 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_action_bonus.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: daejlee <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/16 12:50:56 by daejlee           #+#    #+#             */
+/*   Updated: 2022/11/16 12:50:57 by daejlee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers_bonus.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-
-static void	*kill_single_philo(t_philo_profile *p, t_philo_manager *manager)
-{
-	__uint64_t		time_stamp;
-	struct timeval	*time;
-
-	time = &manager->time;
-	usleep_check(manager, p->die_time);
-	gettimeofday(time, NULL);
-	time_stamp = time->tv_sec * 1000
-		+ time->tv_usec / 1000 - manager->time_init_val;
-	printf("%llu 1 died\n", time_stamp);
-	exit(0);
-}
 
 static int	gne_sleep(t_philo_profile *p, t_philo_manager *manager)
 {

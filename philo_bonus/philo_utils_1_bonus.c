@@ -73,3 +73,12 @@ int	prep_args(t_philo_args *p, char **argv)
 		return (1);
 	return (0);
 }
+
+void	init_profile(t_philo_profile *profile, t_philo_args args)
+{
+	profile->idx = 0;
+	profile->die_time = args.die_time;
+	profile->eat_time = args.eat_time;
+	profile->sleep_time = args.sleep_time;
+	profile->eat_cnt = 0;
+}
