@@ -38,7 +38,7 @@ void	usleep_check(t_philo_manager *manager, int targ_time)
 	get_time(manager, NULL, &r_time);
 	while (1)
 	{
-		usleep(50);
+		usleep(100);
 		get_time(manager, NULL, &time_stamp);
 		if (time_stamp >= (__uint64_t)(targ_time + r_time))
 			break ;
