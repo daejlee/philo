@@ -53,7 +53,7 @@ void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time)
 	get_time(p, time, NULL, &r_time);
 	while (1)
 	{
-		usleep(50);
+		usleep(100);
 		get_time(p, time, NULL, &time_stamp);
 		if (time_stamp >= (__uint64_t)(targ_time + r_time))
 			break ;

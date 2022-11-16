@@ -72,7 +72,7 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 		*p->must_eat_flag = 1;
 		pthread_mutex_unlock(p->m_must_eat_flag);
 	}
-	if (p->eat_time >= p->die_time)
+	if (p->eat_time > p->die_time)
 	{
 		usleep_check(p, time, p->die_time);
 		return (unlock_fork(p));
@@ -107,7 +107,10 @@ int	seg(t_philo_profile *p, struct timeval *time, __uint64_t *time_stamp)
 			return (1);
 	}
 	else
+	{
 		pthread_mutex_unlock(p->m_fork_stat);
+		usleep(100);
+	}
 	return (0);
 }
 
@@ -130,7 +133,7 @@ void	*routine(void *philo_info)
 			usleep_check(p, time, 1);
 	}
 	else if (p->idx % 2)
-		usleep_check(p, time, 1);
+		usleep_check(p, time, p->eat_time);
 	while (is_termination(p))
 	{
 		pthread_mutex_unlock(p->m_t_flag_adr);
