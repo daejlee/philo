@@ -9,7 +9,6 @@
 /*   Updated: 2022/11/16 12:51:13 by daejlee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers.h"
 #include <stdio.h>
 #include <unistd.h>

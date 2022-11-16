@@ -9,11 +9,8 @@
 /*   Updated: 2022/11/16 12:50:57 by daejlee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers_bonus.h"
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include <stdlib.h>
 
 static int	gne_sleep(t_philo_profile *p, t_philo_manager *manager)

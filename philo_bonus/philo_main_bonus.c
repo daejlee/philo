@@ -11,9 +11,9 @@
 /* ************************************************************************** */
 #include "philosophers_bonus.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 
 static int	check_must_eat_sem(t_philo_manager *manager)
 {

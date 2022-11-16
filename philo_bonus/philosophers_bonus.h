@@ -54,12 +54,10 @@ typedef struct s_philo_manager
 
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
-
 int		kill_all(pid_t *pid_arr, int philo_num);
 int		free_mem(t_philo_manager *manager);
 void	init_profile(t_philo_profile *profile, t_philo_args args);
 int		init_manager(t_philo_manager *manager, t_philo_args args);
-
 void	*kill_single_philo(t_philo_profile *p, t_philo_manager *manager);
 void	routine(t_philo_manager *manager, t_philo_profile *p);
 void	usleep_check(t_philo_manager *manager, int targ_time);
