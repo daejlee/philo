@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
 static int	take_fork(t_philo_profile *p, struct timeval *time,
 		__uint64_t *time_stamp)
 {
@@ -84,11 +85,6 @@ static int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 		*p->must_eat_flag = 1;
 		pthread_mutex_unlock(p->m_must_eat_flag);
 	}
-	if (p->eat_time > p->die_time)
-	{
-		usleep_check(p, time, p->die_time);
-		return (unlock_fork(p));
-	}
 	usleep_check(p, time, p->eat_time);
 	unlock_fork(p);
 	return (gne_sleep(p, time));
@@ -112,6 +108,91 @@ static int	seg(t_philo_profile *p, struct timeval *time,
 	return (0);
 }
 
+static int	death_while_eating(t_philo_profile *p, struct timeval *time)
+{
+	__uint64_t	time_stamp;
+
+	if (p->idx % 2)
+		usleep_check(p, time, p->die_time + 1);
+	else
+	{
+		pthread_mutex_lock(p->m_fork_stat);
+		*p->fork_stat[0] = 0;
+		*p->fork_stat[1] = 0;
+		pthread_mutex_unlock(p->m_fork_stat);
+		get_time(p, time, NULL, &time_stamp);
+		pthread_mutex_lock(p->m_fork_slot[0]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+		pthread_mutex_lock(p->m_fork_slot[1]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+		get_time(p, time, &p->r_eat, &time_stamp);
+		printf("%llu %i is eating\n", time_stamp, p->idx);
+		usleep_check(p, time, p->die_time + 10);
+		get_time(p, time, &p->r_eat, &time_stamp);
+	}
+	is_termination(p);
+	return (1);
+}
+
+static int	death_while_sleeping(t_philo_profile *p, struct timeval *time)
+{
+	__uint64_t	time_stamp;
+
+	if (p->idx % 2)
+	{
+		usleep_check(p, time, p->eat_time);
+
+		pthread_mutex_lock(p->m_fork_stat);
+		*p->fork_stat[0] = 0;
+		*p->fork_stat[1] = 0;
+		pthread_mutex_unlock(p->m_fork_stat);
+		get_time(p, time, NULL, &time_stamp);
+		pthread_mutex_lock(p->m_fork_slot[0]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+		pthread_mutex_lock(p->m_fork_slot[1]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+		get_time(p, time, &p->r_eat, &time_stamp);
+
+		printf("%llu %i is eating\n", time_stamp, p->idx);
+		usleep_check(p, time, p->die_time - p->eat_time + 2);
+	}
+	else
+	{
+		pthread_mutex_lock(p->m_fork_stat);
+		*p->fork_stat[0] = 0;
+		*p->fork_stat[1] = 0;
+		pthread_mutex_unlock(p->m_fork_stat);
+		get_time(p, time, NULL, &time_stamp);
+		pthread_mutex_lock(p->m_fork_slot[0]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+		pthread_mutex_lock(p->m_fork_slot[1]);
+		printf("%llu %i has taken a fork.\n", time_stamp, p->idx);
+
+		get_time(p, time, &p->r_eat, &time_stamp);
+		printf("%llu %i is eating\n", time_stamp, p->idx);
+		usleep_check(p, time, p->eat_time);
+		unlock_fork(p);
+
+		get_time(p, time, &p->r_sleep, &time_stamp);
+		printf("%llu %i is sleeping\n", time_stamp, p->idx);
+		usleep_check(p, time, p->die_time - p->eat_time + 1);
+	}
+	is_termination(p);
+	return (1);
+}
+
+// ./philo 2 200 210 200
+// ./philo 2 200 190 200
+int	early_death(t_philo_profile *p, struct timeval *time)
+{
+	if (p->eat_time > p->die_time)
+		return (death_while_eating(p, time));
+	if (p->eat_time + p->sleep_time > p->die_time)
+		return (death_while_sleeping(p, time));
+	else
+		return (1);
+}
+
 void	*routine(void *philo_info)
 {
 	t_philo_profile	*p;
@@ -123,6 +204,8 @@ void	*routine(void *philo_info)
 	if (!(p->m_fork_slot[1]))
 		return (kill_single_philo(p, time));
 	get_time(p, time, &p->r_eat, &time_stamp);
+	if (!early_death(p, time))
+		return (0);
 	if (p->manager_adr->philo_num % 2)
 	{
 		if (p->idx == p->manager_adr->philo_num)
