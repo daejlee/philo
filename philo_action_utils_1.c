@@ -13,6 +13,17 @@
 #include <stdio.h>
 #include <unistd.h>
 
+void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
+{
+	__uint64_t	time_stamp;
+
+	usleep_check(p, time, p->die_time);
+	gettimeofday(time, NULL);
+	time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
+	printf("%llu 1 died\n", time_stamp);
+	return (NULL);
+}
+
 int	is_fork_available(t_philo_profile *p)
 {
 	pthread_mutex_lock(p->m_fork_stat);

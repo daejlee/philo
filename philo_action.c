@@ -13,15 +13,27 @@
 #include <stdio.h>
 #include <unistd.h>
 
-static void	*kill_single_philo(t_philo_profile *p, struct timeval *time)
+static int	take_fork(t_philo_profile *p, struct timeval *time,
+		__uint64_t *time_stamp)
 {
-	__uint64_t	time_stamp;
-
-	usleep_check(p, time, p->die_time);
-	gettimeofday(time, NULL);
-	time_stamp = time->tv_sec * 1000 + time->tv_usec / 1000 - p->time_init_val;
-	printf("%llu 1 died\n", time_stamp);
-	return (NULL);
+	*p->fork_stat[0] = 0;
+	*p->fork_stat[1] = 0;
+	pthread_mutex_unlock(p->m_fork_stat);
+	if (!is_termination(p))
+	{
+		pthread_mutex_lock(p->m_fork_stat);
+		*p->fork_stat[0] = 1;
+		*p->fork_stat[1] = 1;
+		pthread_mutex_unlock(p->m_fork_stat);
+		return (1);
+	}
+	get_time(p, time, NULL, time_stamp);
+	pthread_mutex_lock(p->m_fork_slot[0]);
+	printf("%llu %i has taken a fork.\n", *time_stamp, p->idx);
+	pthread_mutex_lock(p->m_fork_slot[1]);
+	printf("%llu %i has taken a fork.\n", *time_stamp, p->idx);
+	pthread_mutex_unlock(p->m_t_flag_adr);
+	return (0);
 }
 
 static int	gne_sleep(t_philo_profile *p, struct timeval *time)
@@ -53,7 +65,7 @@ static int	gne_sleep(t_philo_profile *p, struct timeval *time)
 	return (0);
 }
 
-int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
+static int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 {
 	__uint64_t		time_stamp;
 
@@ -82,27 +94,13 @@ int	grab_eat_sleep(t_philo_profile *p, struct timeval *time)
 	return (gne_sleep(p, time));
 }
 
-int	seg(t_philo_profile *p, struct timeval *time, __uint64_t *time_stamp)
+static int	seg(t_philo_profile *p, struct timeval *time,
+		__uint64_t *time_stamp)
 {
 	if (!is_fork_available(p))
 	{
-		*p->fork_stat[0] = 0;
-		*p->fork_stat[1] = 0;
-		pthread_mutex_unlock(p->m_fork_stat);
-		if (!is_termination(p))
-		{
-			pthread_mutex_lock(p->m_fork_stat);
-			*p->fork_stat[0] = 1;
-			*p->fork_stat[1] = 1;
-			pthread_mutex_unlock(p->m_fork_stat);
+		if (take_fork(p, time, time_stamp))
 			return (1);
-		}
-		get_time(p, time, NULL, time_stamp);
-		pthread_mutex_lock(p->m_fork_slot[0]);
-		printf("%llu %i has taken a fork.\n", *time_stamp, p->idx);
-		pthread_mutex_lock(p->m_fork_slot[1]);
-		printf("%llu %i has taken a fork.\n", *time_stamp, p->idx);
-		pthread_mutex_unlock(p->m_t_flag_adr);
 		if (grab_eat_sleep(p, time))
 			return (1);
 	}

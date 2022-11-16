@@ -68,7 +68,6 @@ typedef struct s_philo_args
 int		ft_atoi(const char *nptr);
 int		prep_args(t_philo_args *p, char **argv);
 int		is_termination(t_philo_profile *p_info);
-int		grab_eat_sleep(t_philo_profile *p, struct timeval *time);
 void	init_profile(t_philo_manager *manager, t_philo_args *args);
 int		init_manager(t_philo_manager *manager, t_philo_args args);
 int		purge_mtx(t_philo_manager *manager, t_philo_args args);
@@ -81,5 +80,6 @@ void	get_time(t_philo_profile *p, struct timeval *time,
 			struct timeval *dest, __uint64_t *time_stamp);
 void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time);
 int		is_flags_all_up(int *must_eat_flags, int philo_num);
+void	*kill_single_philo(t_philo_profile *p, struct timeval *time);
 
 #endif
