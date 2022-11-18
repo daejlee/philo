@@ -82,4 +82,6 @@ void	usleep_check(t_philo_profile *p, struct timeval *time, int targ_time);
 int		is_flags_all_up(int *must_eat_flags, int philo_num);
 void	*kill_single_philo(t_philo_profile *p, struct timeval *time);
 
+int		early_death(t_philo_profile *p, struct timeval *time);
+
 #endif
