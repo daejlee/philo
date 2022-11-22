@@ -9,7 +9,6 @@
 /*   Updated: 2022/11/22 13:41:37 by daejlee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers.h"
 #include <stdio.h>
 
@@ -51,7 +50,13 @@ static int	death_while_sleeping(t_philo_profile *p, struct timeval *time)
 
 	if (p->idx % 2)
 	{
-		usleep_check(p, time, p->eat_time);
+		if (p->idx == p->manager_adr->philo_num)
+			usleep_check(p, time, p->eat_time * 2 + 1);
+		else
+			usleep_check(p, time, p->eat_time + 1);
+		if (!is_termination(p))
+			return (0);
+		pthread_mutex_unlock(p->m_t_flag_adr);
 		ed_take_fork_n_eat(p, time, &time_stamp);
 		usleep_check(p, time, p->die_time - p->eat_time + 2);
 	}
@@ -64,12 +69,9 @@ static int	death_while_sleeping(t_philo_profile *p, struct timeval *time)
 		printf("%llu %i is sleeping\n", time_stamp, p->idx);
 		usleep_check(p, time, p->die_time - p->eat_time + 1);
 	}
-	is_termination(p);
 	return (1);
 }
 
-// ./philo 2 200 210 200
-// ./philo 2 200 190 200
 int	early_death(t_philo_profile *p, struct timeval *time)
 {
 	if (p->eat_time > p->die_time)
