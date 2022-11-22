@@ -110,29 +110,27 @@ static int	seg(t_philo_profile *p, struct timeval *time,
 void	*routine(void *philo_info)
 {
 	t_philo_profile	*p;
-	struct timeval	*time;
 	__uint64_t		time_stamp;
 
 	p = (t_philo_profile *)philo_info;
-	time = p->time_adr;
 	if (!(p->m_fork_slot[1]))
-		return (kill_single_philo(p, time));
-	get_time(p, time, &p->r_eat, &time_stamp);
-	if (!early_death(p, time))
+		return (kill_single_philo(p, p->time_adr));
+	get_time(p, p->time_adr, &p->r_eat, &time_stamp);
+	if (!early_death(p, p->time_adr))
 		return (0);
 	if (p->manager_adr->philo_num % 2)
 	{
 		if (p->idx == p->manager_adr->philo_num)
-			usleep_check(p, time, p->eat_time * 2);
+			usleep_check(p, p->time_adr, p->eat_time * 2);
 		else if (p->idx % 2)
-			usleep_check(p, time, 1);
+			usleep_check(p, p->time_adr, 1);
 	}
 	else if (p->idx % 2)
-		usleep_check(p, time, p->eat_time);
+		usleep_check(p, p->time_adr, p->eat_time);
 	while (is_termination(p))
 	{
 		pthread_mutex_unlock(p->m_t_flag_adr);
-		if (seg(p, time, &time_stamp))
+		if (seg(p, p->time_adr, &time_stamp))
 			return (0);
 	}
 	return (0);
